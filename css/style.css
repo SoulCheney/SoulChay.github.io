@@ -1513,77 +1513,56 @@ article .content .caption {
   content: ")";
 }
 .highlight {
-  color: #000;
-  background: #fff;
+  background: #f6f6ae url("./school-book.png");
+  border-top: solid 2px #d2e8b9;
+  border-bottom: solid 1px #d2e8b9;
 }
-.highlight .code .subst,
-.highlight .code .title {
-  font-weight: normal;
-  color: #000;
-}
-.highlight .code .comment,
-.highlight .code .quote {
-  color: #808080;
-  font-style: italic;
-}
-.highlight .code .meta {
-  color: #808000;
-}
-.highlight .code .tag {
-  background: #efefef;
-}
-.highlight .code .section,
-.highlight .code .name,
-.highlight .code .literal,
 .highlight .code .keyword,
 .highlight .code .selector-tag,
+.highlight .code .literal {
+  color: #059;
+  font-weight: bold;
+}
+.highlight .code .highlight,
+.highlight .code .subst {
+  color: #3e5915;
+}
+.highlight .code .string,
+.highlight .code .title,
+.highlight .code .section,
 .highlight .code .type,
-.highlight .code .selector-id,
-.highlight .code .selector-class {
-  font-weight: bold;
-  color: #000080;
-}
-.highlight .code .attribute,
-.highlight .code .number,
-.highlight .code .regexp,
-.highlight .code .link {
-  font-weight: bold;
-  color: #00f;
-}
-.highlight .code .number,
-.highlight .code .regexp,
-.highlight .code .link {
-  font-weight: normal;
-}
-.highlight .code .string {
-  color: #008000;
-  font-weight: bold;
-}
 .highlight .code .symbol,
 .highlight .code .bullet,
-.highlight .code .formula {
-  color: #000;
-  background: #d0eded;
-  font-style: italic;
-}
-.highlight .code .doctag {
-  text-decoration: underline;
-}
+.highlight .code .attribute,
+.highlight .code .built_in,
+.highlight .code .builtin-name,
+.highlight .code .addition,
 .highlight .code .variable,
-.highlight .code .template-variable {
-  color: #660e7a;
+.highlight .code .template-tag,
+.highlight .code .template-variable,
+.highlight .code .link {
+  color: #2c009f;
 }
-.highlight .code .addition {
-  background: #baeeba;
+.highlight .code .comment,
+.highlight .code .quote,
+.highlight .code .deletion,
+.highlight .code .meta {
+  color: #e60415;
 }
-.highlight .code .deletion {
-  background: #ffc8bd;
+.highlight .code .keyword,
+.highlight .code .selector-tag,
+.highlight .code .literal,
+.highlight .code .doctag,
+.highlight .code .title,
+.highlight .code .section,
+.highlight .code .type,
+.highlight .code .name,
+.highlight .code .selector-id,
+.highlight .code .strong {
+  font-weight: bold;
 }
 .highlight .code .emphasis {
   font-style: italic;
-}
-.highlight .code .strong {
-  font-weight: bold;
 }
 pre {
   overflow-x: auto;
