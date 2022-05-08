@@ -230,7 +230,7 @@
         <script>
             var now = new Date(); 
             function createtime() { 
-                var grt= new Date("05/06/2022 22:38:00");//在此处修改你的建站时间，格式：月/日/年 时:分:秒
+                var grt= new Date("05/06/2022 22:38:00");//建站时间 格式：月/日/年 时:分:秒
                 now.setTime(now.getTime()+250); 
                 days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
                 hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
@@ -273,20 +273,19 @@
           <ul>
             
               <!-- 不蒜子统计 -->
-              
-                  访问量<span id="busuanzi_value_site_pv"></span> | 访客数<span id="busuanzi_value_site_uv"></span>
-             
-              <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-              
-               
+              <span id="busuanzi_container_site_pv">
+                  阅读量<span id="busuanzi_value_site_pv"></span>
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span id="busuanzi_container_site_uv" style='display:none'>
+                      访问数<span id="busuanzi_value_site_uv"></span>
+              </span>
+            <script async src="/themes/cactus/source/lib/busuanzi/busuanzi.pure.mini.js"></script>
+            
           </ul>
         </nav>
       </div>
 
-      <div id="totop" style="position:fixed;bottom:150px;right:50px;cursor: pointer;">
-<a title="返回顶部"><img src="/imgs/scrollup.png"/></a>
-</div>
-      <script src="/js/totop.js"></script>
 
 </footer>
 
