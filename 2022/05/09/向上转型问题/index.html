@@ -106,9 +106,12 @@
 </ul>
 
     </div>
+
+    {% if page.encrypt == true %}
     <div id="toc">
       
     </div>
+    {% endif %}
   </span>
 </div>
 
@@ -197,10 +200,12 @@
         
       </ul>
     </div>
-
+    
+    {% if page.encrypt == true %}
     <div id="toc-footer" style="display: none">
       
     </div>
+    {% endif %}
 
     <div id="share-footer" style="display: none">
       <ul>
