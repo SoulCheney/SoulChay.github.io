@@ -111,3 +111,9 @@ $(document).ready(function() {
     }
   }
 });
+
+<script>
+    if (document.getElementById("toc-footer")) {
+                document.getElementById("toc-footer").style.display = "inline";
+    }
+</script>
