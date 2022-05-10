@@ -107,11 +107,14 @@
         
         <footer id="footer">
       <div class="footer-left">
+        <!-- 网站运行时间 -->
+        
         <span id="timeDate">载入天数...</span><span id="times">载入时分秒...</span>
         <script>
             var now = new Date(); 
-            function createtime() { 
-                var grt= new Date("05/06/2022 22:38:00");//建站时间 格式：月/日/年 时:分:秒
+            function createtime() {
+                var grt = '05/06/2022 22:38:00';
+                
                 now.setTime(now.getTime()+250); 
                 days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
                 hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
@@ -124,8 +127,9 @@
             } 
         setInterval("createtime()",250);
         </script>
+        
 
-
+        <!-- 版权年份 -->
         <ul>
           Copyright &copy;
           
@@ -139,6 +143,7 @@
       <div class="footer-right">
 
         <nav>
+          <!-- 导航栏 -->
           <ul>
             <!--
           --><li><a href="/">Home</a></li><!--
@@ -153,10 +158,9 @@
         -->
           </ul>
 
+          <!-- 不蒜子统计访问量 -->
           <ul>
-            
-
-              <!-- 不蒜子统计 -->
+                   
               <span class="site-pv">
                 <i class="fa fa-eye"></i> 
                   <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
@@ -176,7 +180,7 @@
 
 </footer>
 
-
+    
     </div>
     <!-- styles -->
 
