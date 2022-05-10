@@ -111,13 +111,7 @@ $(document).ready(function() {
     }
   }
 
-  if (document.getElementById("toc")) {
-    if(page.encrypt == true){
-      document.getElementById("toc").style.display="none";
-    }else{
-      document.getElementById("toc").style.display="inline";
-    }
-  }
+  
 
 });
 
