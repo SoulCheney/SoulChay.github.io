@@ -110,10 +110,10 @@ $(document).ready(function() {
       });
     }
   }
+
+  if (document.getElementById("toc")) {
+      document.getElementById("toc").style.display="inline";
+  }
+  
 });
 
-<script>
-    if (document.getElementById("toc-footer")) {
-                document.getElementById("toc-footer").style.display="inline";
-    }
-</script>
