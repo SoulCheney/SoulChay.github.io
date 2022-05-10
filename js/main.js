@@ -111,9 +111,9 @@ $(document).ready(function() {
     }
   }
 
-  if (document.getElementById("toc")) {
-      document.getElementById("toc").style.display="inline";
-  }
+  // if (document.getElementById("toc")) {
+  //     document.getElementById("toc").style.display="inline";
+  // }
   
 });
 
