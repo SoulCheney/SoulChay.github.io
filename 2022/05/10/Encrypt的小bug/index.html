@@ -10,7 +10,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Encrypt的目录bug">
 <meta property="og:url" content="http://example.com/2022/05/10/Encrypt%E7%9A%84%E5%B0%8Fbug/index.html">
-<meta property="og:site_name" content="不能说的秘密">
+<meta property="og:site_name" content="22">
 <meta property="og:description" content="写在前面起初是不想搞博文加密的，奈何博客地址不小心泄露给表妹，于是决定还是要折腾一下这个博文加密。 （😎 ：表妹啊，你就别想敲诈我了！） 安装插件1npm install --save hexo-blog-encrypt  加密文章①：在想要加密的博文头部增添 password , abstract , message 字段即可，三个字段可加可不加，不加则采用 _config.yml 配置。 1">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/SoulChay/figureBed@master/bk/encrypt/1.png">
@@ -64,7 +64,17 @@
     
 	<!-- mathjax -->
 	
-<meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="不能说的秘密" type="application/atom+xml">
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="22" type="application/atom+xml">
 </head>
 
 <body class="max-width mx-auto px3 ltr">
@@ -129,6 +139,15 @@
       
     </div>
   </span>
+
+  
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+  
+
 </div>
 
     
