@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="抛出问题先来看一个代码示例： 1234567891011121314151617181920public class Int2LongOverflow &amp;#123;    public static void main(String[] args) &amp;#123;        &#x2F;&#x2F; Integer.MAX_VALUE &#x3D; 2147483647        int a &#x3D; Integer.MAX_">
+<meta property="og:type" content="article">
+<meta property="og:title" content="向上转型问题">
+<meta property="og:url" content="http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="22">
+<meta property="og:description" content="抛出问题先来看一个代码示例： 1234567891011121314151617181920public class Int2LongOverflow &amp;#123;    public static void main(String[] args) &amp;#123;        &#x2F;&#x2F; Integer.MAX_VALUE &#x3D; 2147483647        int a &#x3D; Integer.MAX_">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-07-09T07:08:00.000Z">
+<meta property="article:modified_time" content="2022-05-14T00:12:15.402Z">
+<meta property="article:author" content="Soulchay">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>向上转型问题</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="22" type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2022/05/09/%E4%B8%8D%E8%92%9C%E5%AD%90%20&%20%E7%9C%8B%E6%9D%BF%E5%96%B5%20bug%20/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2021/05/10/17.enum%E6%9E%9A%E4%B8%BE/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&text=向上转型问题"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&title=向上转型问题"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&is_video=false&description=向上转型问题"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=向上转型问题&body=Check out this article: http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&title=向上转型问题"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&title=向上转型问题"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&title=向上转型问题"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&title=向上转型问题"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&name=向上转型问题&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&t=向上转型问题"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    
+    <div id="toc" >
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%9B%E5%87%BA%E9%97%AE%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">抛出问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E9%97%AE%E9%A2%98"><span class="toc-number">2.</span> <span class="toc-text">解决问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">问题总结</span></a></li></ol>
+      
+    </div>
+  </span>
+
+  
+
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        向上转型问题
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Soulchay</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2021-07-09T07:08:00.000Z" itemprop="datePublished">2021-07-09</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Java/" rel="tag">Java</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="抛出问题"><a href="#抛出问题" class="headerlink" title="抛出问题"></a>抛出问题</h2><p>先来看一个代码示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Int2LongOverflow</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="comment">// Integer.MAX_VALUE = 2147483647</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> Integer.MAX_VALUE;</span><br><span class="line">        <span class="type">int</span> <span class="variable">b1</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">        <span class="type">long</span> <span class="variable">sum1</span> <span class="operator">=</span> a + b1;</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">sum2</span> <span class="operator">=</span> <span class="number">2147483647</span> + <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">b2</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">        <span class="type">long</span> <span class="variable">sum3</span> <span class="operator">=</span> a + b2;</span><br><span class="line"></span><br><span class="line">        <span class="type">long</span> <span class="variable">sum4</span> <span class="operator">=</span> <span class="number">2147483647</span> + <span class="number">1L</span>;</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;sum1 = &quot;</span> + sum1);</span><br><span class="line">        System.out.println(<span class="string">&quot;sum2 = &quot;</span> + sum2);</span><br><span class="line">        System.out.println(<span class="string">&quot;sum3 = &quot;</span> + sum3);</span><br><span class="line">        System.out.println(<span class="string">&quot;sum4 = &quot;</span> + sum4);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>思索一下，是不是sum1, sum2, sum3, sum4均输出2147483648呢？</p>
+<p>下面是代码运行结果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sum1 = -<span class="number">2147483648</span></span><br><span class="line">sum2 = -<span class="number">2147483648</span></span><br><span class="line">sum3 = <span class="number">2147483648</span></span><br><span class="line">sum4 = <span class="number">2147483648</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="解决问题"><a href="#解决问题" class="headerlink" title="解决问题"></a>解决问题</h2><p>看似sum1, sum2, sum3, sum4均计算2147483647 + 1的结果，并且结果用 <b>long</b> 类型接收，但为什么会有两种不同计算结果呢？</p>
+<ol>
+<li>sum1计算的是a + b1，其中a和b1均为int类型数据。计算顺序是这样的：首先取表达式中最大的类型暂存计算结果，也就是int类型暂存a + b1的结果，显然会发生溢出，暂存的结果就为-2147483648；然后再将暂存的结果赋值给sum1，其中会向上隐式转型，于是sum1 &#x3D; -2147483648。</li>
+<li>sum2计算的是两个字面量值的和。在Java中，纯数字字面量默认类型为int（在整数后加L表示long类型，例如12L表示long类型的12），因此，sum2的计算效果同sum1。</li>
+<li>sum3与sum1唯一的区别就是，其中b2的类型变为long（值保持不变）。因此在计算时，会将a向上转型为long，再做long类型之间的运算，运算结果为long类型，最后再赋值给sum3。这一系列操作自然不会发生溢出。</li>
+<li>sum4表达式中的字面量1L为long类型，计算效果同sum3，不会发生溢出。</li>
+</ol>
+<h2 id="问题总结"><a href="#问题总结" class="headerlink" title="问题总结"></a>问题总结</h2><p>在Java中，如果赋值语句的右边是表达式，可以将该语句看成三个执行过程。</p>
+<ol>
+<li>将表达式中所有变量或字面量隐式向上转型为其中的最大类型；</li>
+<li>用计算式中的最大类型暂存计算结果；</li>
+<li>将暂存的结果赋值给左侧变量，如果暂存类型与左侧变量类型不一致，需要做显式（向下转型）或隐式（向上转型）的类型转换。</li>
+</ol>
+<p>转自：<a target="_blank" rel="noopener" href="https://blog.csdn.net/huwei1844352682/article/details/106632488">https://blog.csdn.net/huwei1844352682/article/details/106632488</a></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    <div id="toc-footer" style="display: none"> 
+      <div id="toc-footer2" >
+        
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%9B%E5%87%BA%E9%97%AE%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">抛出问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E9%97%AE%E9%A2%98"><span class="toc-number">2.</span> <span class="toc-text">解决问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">问题总结</span></a></li></ol>
+        
+      </div>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&text=向上转型问题"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&title=向上转型问题"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&is_video=false&description=向上转型问题"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=向上转型问题&body=Check out this article: http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&title=向上转型问题"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&title=向上转型问题"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&title=向上转型问题"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&title=向上转型问题"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&name=向上转型问题&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2021/07/09/%E5%90%91%E4%B8%8A%E8%BD%AC%E5%9E%8B%E9%97%AE%E9%A2%98/&t=向上转型问题"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        <!-- 网站运行时间 -->
+        <span id="timeDate">载入天数...</span><span id="times">载入时分秒...</span>
+        <script>
+            var now = new Date(); 
+            function createtime() { 
+                var grt= new Date("05/06/2022 22:38:00");//建站时间 格式：月/日/年 时:分:秒
+                now.setTime(now.getTime()+250); 
+                days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+                hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+                if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+                mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+                seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+                snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+                document.getElementById("timeDate").innerHTML = "has been running for "+dnum+" d "; 
+                document.getElementById("times").innerHTML = hnum + " h " + mnum + " m " + snum + " s"; 
+            } 
+        setInterval("createtime()",250);
+        </script>
+
+        <!-- 导航栏 -->
+        <ul>
+          Copyright &copy;
+          
+          
+          2022
+          Soulchay
+        </ul>
+       
+      </div>
+      
+      <div class="footer-right">
+
+        <nav>
+          <!-- 导航栏 -->
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+
+          <!-- 不蒜子统计访问量 -->
+          <ul>
+                   
+              <span class="site-pv">
+                <i class="fa fa-eye"></i> 
+                  <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span class="site-uv">
+                <i class="fa fa-user"></i> 
+                  <span class="busuanzi-user" id="busuanzi_value_site_uv"></span>
+              </span>
+              
+            <script async src="/lib/busuanzi/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+
+
+</footer>
+
+    
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?5322d3f5365b142e868c4e1fd7131329";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'SoulChay/SoulChay.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'icy-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"left","width":140,"height":280},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
