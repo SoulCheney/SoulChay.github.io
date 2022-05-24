@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="写在前面前几天想起自己基于（Netty &amp; Nacos）搭建的 Rpc 框架使用的是单体架构，一直想搭一个分布式架构的Rpc轮子。于是参考 尚学堂编程俱乐部 的 Rpc 代码，尝试了一次基于（Zookeeper &amp; RMI）的分布式架构的 Rpc 搭建。以下为本人整理的搭建过程（由于写这篇文章时时间紧张，模块的创建在文章中没有指明，那就贴个tree吧）。 1234567891011">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RPC(Zookeeper &amp; RMI)">
+<meta property="og:url" content="http://example.com/2022/03/13/RPC(Zookeeper%20&%20RMI)/index.html">
+<meta property="og:site_name" content="22Cheney.">
+<meta property="og:description" content="写在前面前几天想起自己基于（Netty &amp; Nacos）搭建的 Rpc 框架使用的是单体架构，一直想搭一个分布式架构的Rpc轮子。于是参考 尚学堂编程俱乐部 的 Rpc 代码，尝试了一次基于（Zookeeper &amp; RMI）的分布式架构的 Rpc 搭建。以下为本人整理的搭建过程（由于写这篇文章时时间紧张，模块的创建在文章中没有指明，那就贴个tree吧）。 1234567891011">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/SoulChay/figureBed@master/blog/rpc/r&z/1.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/SoulChay/figureBed@master/blog/rpc/r&z/2.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/SoulChay/figureBed@master/blog/rpc/r&z/3.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/SoulChay/figureBed@master/blog/rpc/r&z/4.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/SoulChay/figureBed@master/blog/rpc/r&z/5.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/SoulChay/figureBed@master/blog/rpc/r&z/6.png">
+<meta property="article:published_time" content="2022-03-12T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-20T08:24:33.729Z">
+<meta property="article:author" content="Soulchay">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/SoulChay/figureBed@master/blog/rpc/r&z/1.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>RPC(Zookeeper &amp; RMI)</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="22Cheney." type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2022/03/22/Rpc%E5%B7%A9%E5%9B%BA/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2022/03/10/Zookeeper/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&text=RPC(Zookeeper &amp; RMI)"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&title=RPC(Zookeeper &amp; RMI)"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&is_video=false&description=RPC(Zookeeper &amp; RMI)"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=RPC(Zookeeper &amp; RMI)&body=Check out this article: http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&title=RPC(Zookeeper &amp; RMI)"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&title=RPC(Zookeeper &amp; RMI)"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&title=RPC(Zookeeper &amp; RMI)"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&title=RPC(Zookeeper &amp; RMI)"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&name=RPC(Zookeeper &amp; RMI)&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&t=RPC(Zookeeper &amp; RMI)"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    
+    <div id="toc" >
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-RMI-%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="toc-number">2.</span> <span class="toc-text">1. RMI 服务端</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1%E5%AE%9A%E4%B9%89%E6%8E%A5%E5%8F%A3"><span class="toc-number">2.1.</span> <span class="toc-text">1.1定义接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2%E5%AE%9A%E4%B9%89%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%B1%BB"><span class="toc-number">2.2.</span> <span class="toc-text">1.2定义接口的实现类</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%B3%A8%E5%86%8C-RMI-%E6%9C%8D%E5%8A%A1"><span class="toc-number">3.</span> <span class="toc-text">2. 注册 RMI 服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E8%BF%9E%E6%8E%A5Zookeeper"><span class="toc-number">4.</span> <span class="toc-text">3. 连接Zookeeper</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Zookeeper%E6%B3%A8%E5%86%8C"><span class="toc-number">5.</span> <span class="toc-text">4. Zookeeper注册</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%88%9D%E5%A7%8B%E5%8C%96%E5%8F%82%E6%95%B0"><span class="toc-number">6.</span> <span class="toc-text">5. 初始化参数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">6.1.</span> <span class="toc-text">5.1 参数配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%8A%A0%E8%BD%BD%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">6.2.</span> <span class="toc-text">5.2 加载配置文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%B5%8B%E8%AF%95%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="toc-number">7.</span> <span class="toc-text">6. 测试服务端</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%90%AF%E5%8A%A8%E9%97%AE%E9%A2%98"><span class="toc-number">8.</span> <span class="toc-text">7. 服务端启动问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E5%A2%9E%E5%8A%A0%E6%9C%8D%E5%8A%A1%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">8.1.</span> <span class="toc-text">7.1 增加服务配置文件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#7-1-1-%E6%9C%8D%E5%8A%A1%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">8.1.1.</span> <span class="toc-text">7.1.1 服务配置文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-1-2-%E5%8A%A0%E8%BD%BD%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">8.1.2.</span> <span class="toc-text">7.1.2 加载配置文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-1-3-%E4%BF%AE%E6%94%B9%E5%90%AF%E5%8A%A8%E7%B1%BB"><span class="toc-number">8.1.3.</span> <span class="toc-text">7.1.3 修改启动类</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E8%8A%82%E7%82%B9%E5%B7%B2%E5%88%9B%E5%BB%BA%E9%97%AE%E9%A2%98"><span class="toc-number">8.2.</span> <span class="toc-text">7.2 节点已创建问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-RMI-%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-number">9.</span> <span class="toc-text">8. RMI 客户端</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">10.</span> <span class="toc-text">写在最后</span></a></li></ol>
+      
+    </div>
+  </span>
+
+  
+
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        RPC(Zookeeper &amp; RMI)
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Soulchay</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-03-12T16:00:00.000Z" itemprop="datePublished">2022-03-13</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Java/" rel="tag">Java</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>前几天想起自己基于（Netty &amp; Nacos）搭建的 Rpc 框架使用的是单体架构，一直想搭一个分布式架构的Rpc轮子。于是参考 <a target="_blank" rel="noopener" href="https://space.bilibili.com/701029654?spm_id_from=333.788.b_765f7570696e666f.1">尚学堂编程俱乐部</a> 的 Rpc 代码，尝试了一次基于（Zookeeper &amp; RMI）的分布式架构的 Rpc 搭建。以下为本人整理的搭建过程（由于写这篇文章时时间紧张，模块的创建在文章中没有指明，那就贴个tree吧）。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line">D:.</span><br><span class="line">│  pom.xml</span><br><span class="line">│  RpcCnted.iml</span><br><span class="line">│  </span><br><span class="line">├─.idea</span><br><span class="line">│      .gitignore</span><br><span class="line">│      compiler.xml</span><br><span class="line">│      jarRepositories.xml</span><br><span class="line">│      misc.xml</span><br><span class="line">│      workspace.xml</span><br><span class="line">│      </span><br><span class="line">├─my_rpc</span><br><span class="line">│  │  pom.xml</span><br><span class="line">│  │  </span><br><span class="line">│  ├─my_rpc_api</span><br><span class="line">│  │  │  pom.xml</span><br><span class="line">│  │  │  </span><br><span class="line">│  │  └─src</span><br><span class="line">│  │      └─main</span><br><span class="line">│  │          └─java</span><br><span class="line">│  │              └─com</span><br><span class="line">│  │                  └─soul</span><br><span class="line">│  │                      └─service</span><br><span class="line">│  │                              CustomerService.java</span><br><span class="line">│  │                              UserService.java</span><br><span class="line">│  │                              </span><br><span class="line">│  ├─my_rpc_client</span><br><span class="line">│  │  │  pom.xml</span><br><span class="line">│  │  │  </span><br><span class="line">│  │  └─src</span><br><span class="line">│  │      └─main</span><br><span class="line">│  │          ├─java</span><br><span class="line">│  │          │  └─com</span><br><span class="line">│  │          │      └─soul</span><br><span class="line">│  │          │              TestRpcClient.java</span><br><span class="line">│  │          │              </span><br><span class="line">│  │          └─resources</span><br><span class="line">│  │                  soul-rpc.properties</span><br><span class="line">│  │                  </span><br><span class="line">│  └─my_rpc_server</span><br><span class="line">│      │  pom.xml</span><br><span class="line">│      │  </span><br><span class="line">│      └─src</span><br><span class="line">│          └─main</span><br><span class="line">│              ├─java</span><br><span class="line">│              │  └─com</span><br><span class="line">│              │      └─soul</span><br><span class="line">│              │          │  ServerApplication.java</span><br><span class="line">│              │          │  </span><br><span class="line">│              │          └─service</span><br><span class="line">│              │              └─impl</span><br><span class="line">│              │                      CustomerServiceImpl.java</span><br><span class="line">│              │                      UserServiceImpl.java</span><br><span class="line">│              │                      </span><br><span class="line">│              └─resources</span><br><span class="line">│                      soul-rpc-services.properties</span><br><span class="line">│                      soul-rpc.properties</span><br><span class="line">│                      </span><br><span class="line">└─rpc_soul_framework</span><br><span class="line">    │  pom.xml</span><br><span class="line">    │  </span><br><span class="line">    └─src</span><br><span class="line">        └─main</span><br><span class="line">            ├─java</span><br><span class="line">            │  └─com</span><br><span class="line">            │      └─soul</span><br><span class="line">            │          └─rpc</span><br><span class="line">            │              │  SoulRpcFactory.java</span><br><span class="line">            │              │  </span><br><span class="line">            │              ├─connection</span><br><span class="line">            │              │      ZkConnection.java</span><br><span class="line">            │              │      </span><br><span class="line">            │              └─registry</span><br><span class="line">            │                      SoulRpcRegistry.java</span><br><span class="line">            │                      </span><br><span class="line">            └─resources</span><br><span class="line">                    soul-rpc.properties</span><br><span class="line">                    </span><br></pre></td></tr></table></figure>
+
+<h2 id="1-RMI-服务端"><a href="#1-RMI-服务端" class="headerlink" title="1. RMI 服务端"></a>1. RMI 服务端</h2><p>首先我们先创建一个服务端接口与其实现类。很 easy 是吧！</p>
+<h3 id="1-1定义接口"><a href="#1-1定义接口" class="headerlink" title="1.1定义接口"></a>1.1定义接口</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//RMI 的接口需要继承 Remote ，方法都需要抛出 RemoteException</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">UserService</span> <span class="keyword">extends</span> <span class="title class_">Remote</span> &#123;</span><br><span class="line">    <span class="comment">//根据用户名查询用户，返回一个字符串</span></span><br><span class="line">    String <span class="title function_">getUser</span><span class="params">(String name)</span> <span class="keyword">throws</span> RemoteException;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2定义接口的实现类"><a href="#1-2定义接口的实现类" class="headerlink" title="1.2定义接口的实现类"></a>1.2定义接口的实现类</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 用户服务实现类</span></span><br><span class="line"><span class="comment">// RMI 的接口实现类则继承 UnicastRemoteObject 就好 ，方法也需要抛出 RemoteException</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserServiceImpl</span> <span class="keyword">extends</span> <span class="title class_">UnicastRemoteObject</span> <span class="keyword">implements</span> <span class="title class_">UserService</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getUser</span><span class="params">(String name)</span> <span class="keyword">throws</span> RemoteException &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;要查询的用户是：&quot;</span> + name);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&#123;\&quot;name\&quot;:\&quot;&quot;</span>+name+<span class="string">&quot;\&quot;,\&quot;age\&quot;:20,\&quot;gender\&quot;,\&quot;男\&quot;&#125;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">UserServiceImpl</span><span class="params">()</span> <span class="keyword">throws</span> RemoteException&#123;</span><br><span class="line">        <span class="built_in">super</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-注册-RMI-服务"><a href="#2-注册-RMI-服务" class="headerlink" title="2. 注册 RMI 服务"></a>2. 注册 RMI 服务</h2><p>最简单的第一步做完了！迈出第一步，我们已经成功一半了！接下来我们需要把 RMI 的服务给注册到它的 <b>RMIRegistry</b> 中。那我们就定义一个类来专门注册RMI 的服务吧！</p>
+<p>首先我们知道，RMIRegistry 存储服务的key是一个固定格式的字符串。</p>
+<p>它的基本格式为 ：rmi格式为：<code>&quot;rmi://ip:port/interface&quot;</code> , 所以我们先把 ip 和 port 定义出来。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SoulRpcRegistry</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> String ip;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> port;   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>OK！我们开始注册，添加一个注册服务的方法，参数当然是服务 <code>interface</code> 了。这里因为我们使用的是 RMI ，定义的服务端接口都是Remote的子类，所以这里就使用泛型了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span>，</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SoulRpcRegistry</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> String ip;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> port;</span><br><span class="line">     </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 注册服务的方法</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> serviceInterface - 服务接口类的对象。 如：com.soul.service.UserService.class</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> serviceObject    - 服务类实现类型的对象。 如：com.soul.service.impl.USerServiceImpl.class</span></span><br><span class="line"><span class="comment">     *  </span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">registryService</span><span class="params">(Class&lt;? extends Remote&gt; serviceInterface, Remote serviceObject)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="comment">//rmi = rmi://ip:port/com.soul.service.UserService</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">rmi</span> <span class="operator">=</span> <span class="string">&quot;rmi://&quot;</span> + ip + <span class="string">&quot;:&quot;</span> + port + <span class="string">&quot;/&quot;</span> + serviceInterface.getName();</span><br><span class="line">        <span class="comment">//注册服务对象</span></span><br><span class="line">        Naming.rebind(rmi, serviceObject);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样我们的 RMI 注册服务也完成了！</p>
+<h2 id="3-连接Zookeeper"><a href="#3-连接Zookeeper" class="headerlink" title="3. 连接Zookeeper"></a>3. 连接Zookeeper</h2><p>我们想要把 RMI 中存储的服务端信息 存到 Zookeeper 中，首先就要连接Zookeeper。</p>
+<p>既然是Zookeeper的连接类，就需要 Zookeeper 的连接地址，还有连接的最大超时时间。教练教练，这个我会！</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ZkConnection</span> &#123;</span><br><span class="line">    <span class="comment">//保存zk的地址，格式为：ip:port。如：192.168.169.130：2181</span></span><br><span class="line">    <span class="keyword">private</span> String zkServer;</span><br><span class="line">    <span class="comment">//连接超时时间</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> sessionTimeout;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们在构造方法里初始化这两个参数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//设置 Zookeeper连接</span></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">ZkConnection</span><span class="params">(String zkServer, <span class="type">int</span> sessionTimeout)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.zkServer = zkServer;</span><br><span class="line">    <span class="built_in">this</span>.sessionTimeout = sessionTimeout;</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"><span class="comment">//设置无参数 Zookeeper连接，给定默认值。</span></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">ZkConnection</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>();</span><br><span class="line">    <span class="built_in">this</span>.zkServer = <span class="string">&quot;localhost:2181&quot;</span>;</span><br><span class="line">    <span class="built_in">this</span>.sessionTimeout = <span class="number">10</span> * <span class="number">1000</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后与 Zookeeper 进行连接 ，返回值类型Zookeeper。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> ZooKeeper <span class="title function_">getConnection</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">ZooKeeper</span>(zkServer, sessionTimeout, <span class="keyword">new</span> <span class="title class_">Watcher</span>() &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">process</span><span class="params">(WatchedEvent watchedEvent)</span> &#123;</span><br><span class="line">            <span class="comment">//不知道写啥就先空着呗</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-Zookeeper注册"><a href="#4-Zookeeper注册" class="headerlink" title="4. Zookeeper注册"></a>4. Zookeeper注册</h2><p>我们已经把服务注册到 RMI 的 Registry 中了，现在只需要把 RMI 中存储的 访问地址 URI 存储到 Zookeeper 中。</p>
+<p>既然要注册，必然需要我们上一步的定义的 <code>ZkConnection</code> 来帮我们连接 Zookeeper，所以我们在 <code>SoulRpcRegistry</code> 中增加 <code>ZkConnection</code> 属性，并修改 <code>registryService</code> 方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Zookeeper连接对象</span></span><br><span class="line"><span class="keyword">private</span> ZkConnection connection;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 注册服务的方法</span></span><br><span class="line"><span class="comment"> * 1.拼接RMI的访问地址URI</span></span><br><span class="line"><span class="comment"> * 2.把访问地址URI存储在Zookeeper</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> serviceInterface - 服务接口类的对象。 如：com.soul.service.UserService.class</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> serviceObject - 服务类实现类型的对象。 如：com.soul.service.impl.USerServiceImpl.class</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> Exception - 抛出异常代表注册失败</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">registryService</span><span class="params">(Class&lt;? extends Remote&gt; serviceInterface, Remote serviceObject)</span> <span class="keyword">throws</span> IOException, KeeperException, InterruptedException &#123;</span><br><span class="line">    <span class="comment">//rmi = rmi://ip:port/com.soul.service.UserService</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">rmi</span> <span class="operator">=</span> <span class="string">&quot;rmi://&quot;</span> + ip + <span class="string">&quot;:&quot;</span> + port + <span class="string">&quot;/&quot;</span> + serviceInterface.getName();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//把服务对象在RMI的registry中注册</span></span><br><span class="line">    Naming.rebind(rmi, serviceObject);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//拼接一个有规则的zk存储节点命名</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">path</span> <span class="operator">=</span> <span class="string">&quot;/soul/rpc/&quot;</span> + serviceInterface.getName();</span><br><span class="line">    connection.getConnection().create(path, rmi.getBytes(),</span><br><span class="line">                                      ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这就大功告成了？no no no！我们只在 Zookeeper 中存服务进去可不行，也得取出来用呀，不然我这不白存啦？</p>
+<p>那我们就在 <code>SoulRpcRegistry</code> 中添加一个取的方法，首先拿到节点数据，然后再去 <code>RMIRegistry</code> 中拿到客户端的代理对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据服务接口类型访问zk，获取RMI的远程代理对象</span></span><br><span class="line"><span class="comment"> * 1.拼接一个zk中的节点名称</span></span><br><span class="line"><span class="comment"> * 2.访问zk，查询节点中存储的数据</span></span><br><span class="line"><span class="comment"> * 3.根据查询的结果，创建一个代理对象。</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> &lt;T <span class="keyword">extends</span> <span class="title class_">Remote</span>&gt; T <span class="title function_">getServiceProxy</span><span class="params">(Class&lt;T&gt; serviceInterface)</span> <span class="keyword">throws</span> IOException, KeeperException, InterruptedException, NotBoundException &#123;</span><br><span class="line">    <span class="comment">//拼接zk中的节点名称</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">path</span> <span class="operator">=</span> <span class="string">&quot;/soul/rpc/&quot;</span> + serviceInterface.getName();</span><br><span class="line">    <span class="comment">//查询节点中存储的数据</span></span><br><span class="line">    <span class="type">byte</span>[] datas = connection.getConnection().getData(path, <span class="literal">false</span>, <span class="literal">null</span>);</span><br><span class="line">    <span class="comment">//把查询的字节数组，翻译成RMI的访问地址</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">rmi</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">String</span>(datas);</span><br><span class="line">    <span class="comment">//返回代理对象</span></span><br><span class="line">    <span class="keyword">return</span> (T) Naming.lookup(rmi);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样整个注册器我们就写好啦！</p>
+<h2 id="5-初始化参数"><a href="#5-初始化参数" class="headerlink" title="5. 初始化参数"></a>5. 初始化参数</h2><h3 id="5-1-参数配置文件"><a href="#5-1-参数配置文件" class="headerlink" title="5.1 参数配置文件"></a>5.1 参数配置文件</h3><p>我们知道 ，无论是 RMI 还是 Zookeeper ，都需要一些固定格式的参数来使用，比如 ip、port等。这些参数一旦发生变化，我们想要修改就会变得很麻烦，需要去代码里面疯狂 Ctrl + F ，所以最好使用一个配置文件来存储这些参数的值。</p>
+<p>定义一个配置文件 (.properties) ：</p>
+<p><code>soul-rpc.properties:</code></p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">registry.ip</span>=<span class="string">127.0.0.1</span></span><br><span class="line"><span class="attr">registry.port</span>=<span class="string">9999</span></span><br><span class="line"><span class="attr">zk.server</span>=<span class="string">192.168.169.130:2181</span></span><br><span class="line"><span class="attr">zk.sessionTimeout</span>=<span class="string">20000</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-2-加载配置文件"><a href="#5-2-加载配置文件" class="headerlink" title="5.2 加载配置文件"></a>5.2 加载配置文件</h3><p>好嘞，我们参数的配置文件定义好了，接下来有个新问题：什么时候加载配置文件呢？那肯定是在使用 Zookeeper 或 RMI 之前呀！</p>
+<p>那我们就定义一个服务端的入口类呗，在入口类的代码块或者构造方法中加载配置文件不就得了！而且要记得我们 RMI 的注册器也还没创建呢，可以在这个入口类中一并创建。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SoulRpcFactory</span> &#123;</span><br><span class="line">    <span class="comment">//保存配置信息</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Properties</span> <span class="variable">config</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Properties</span>();</span><br><span class="line">    <span class="comment">//连接对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ZkConnection connection;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> SoulRpcRegistry registry;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 初始化过程。</span></span><br><span class="line"><span class="comment">     * 固定逻辑：在classpath下，配置文件。命名为: soul-rpc.properties</span></span><br><span class="line"><span class="comment">     * 配置文件结构固化：</span></span><br><span class="line"><span class="comment">     *  registry.ip = 服务端Ip地址，默认为 localhost</span></span><br><span class="line"><span class="comment">     *  registry.port = 服务端端口号，默认为 9090</span></span><br><span class="line"><span class="comment">     *  zk.server = Zookeeper访问地址，默认为 localhost:2181</span></span><br><span class="line"><span class="comment">     *  zk.sessionTimeout = Zookeeper连接会话超时，默认10s</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//获取classpath类路径下的配置文件输入流</span></span><br><span class="line">            <span class="type">InputStream</span> <span class="variable">input</span> <span class="operator">=</span> SoulRpcFactory.class.getClassLoader().getResourceAsStream(<span class="string">&quot;soul-rpc.properties&quot;</span>);</span><br><span class="line">            <span class="comment">//读取配置文件，初始化配置对象</span></span><br><span class="line">            config.load(input);</span><br><span class="line">            <span class="comment">//获取服务端ip</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">serverIp</span> <span class="operator">=</span> config.getProperty(<span class="string">&quot;registry.ip&quot;</span>) == <span class="literal">null</span> </span><br><span class="line">                ? <span class="string">&quot;localhost&quot;</span> : config.getProperty(<span class="string">&quot;registry.ip&quot;</span>);</span><br><span class="line">            <span class="comment">//获取服务端port</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">serverPort</span> <span class="operator">=</span> config.getProperty(<span class="string">&quot;registry.port&quot;</span>)  == <span class="literal">null</span> </span><br><span class="line">                ? <span class="number">9090</span> : Integer.parseInt(config.getProperty(<span class="string">&quot;registry.port&quot;</span>));</span><br><span class="line">            <span class="comment">//获取zk服务器地址</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">zkServer</span> <span class="operator">=</span> config.getProperty(<span class="string">&quot;zk.server&quot;</span>) == <span class="literal">null</span> </span><br><span class="line">                ? <span class="string">&quot;localhost:2181&quot;</span> : config.getProperty(<span class="string">&quot;zk.server&quot;</span>);</span><br><span class="line">            <span class="comment">//获取zk客户端会话超时时间</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">zkSessionTimeout</span> <span class="operator">=</span> config.getProperty(<span class="string">&quot;zk.sessionTimeout&quot;</span>) == <span class="literal">null</span> </span><br><span class="line">                ? <span class="number">10000</span> : Integer.parseInt(config.getProperty(<span class="string">&quot;zk.sessionTimeout&quot;</span>));</span><br><span class="line"></span><br><span class="line">            <span class="comment">//创建连接对象</span></span><br><span class="line">            connection = <span class="keyword">new</span> <span class="title class_">ZkConnection</span>(zkServer,zkSessionTimeout);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//创建注册器对象</span></span><br><span class="line">            registry = <span class="keyword">new</span> <span class="title class_">SoulRpcRegistry</span>(serverIp,serverPort,connection);</span><br><span class="line">            <span class="comment">//创建RMI的注册器</span></span><br><span class="line">            LocateRegistry.createRegistry(serverPort);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="comment">//初始化代码块发生异常的时候，抛出错误，中断虚拟机</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ExceptionInInitializerError</span>(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>既然是入口类，那我们可以把 <code>SoulRpcRegistry</code> 的注册服务的方法 和 获取代理对象的方法 也交给这个入口类管理，那就简简单单在这个类中添加两个方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//提供一个快速的注册服务的静态工具方法</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">registerService</span><span class="params">(Class&lt;? extends Remote&gt; serviceInterface, Remote serviceObject)</span> <span class="keyword">throws</span> InterruptedException, IOException, KeeperException &#123;</span><br><span class="line">    registry.registryService(serviceInterface,serviceObject);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//提供一个快速的拿到客户端代理对象的静态工具方法</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T <span class="keyword">extends</span> <span class="title class_">Remote</span>&gt; T <span class="title function_">getServiceProxy</span><span class="params">(Class&lt;T&gt; serviceInterface)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">    <span class="keyword">return</span> registry.getServiceProxy(serviceInterface);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>OK! 小功告成！接下来测试一下服务端能否使用吧！</p>
+<h2 id="6-测试服务端"><a href="#6-测试服务端" class="headerlink" title="6. 测试服务端"></a>6. 测试服务端</h2><p>写个测试类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ServerApplication</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="comment">//创建一个服务对象</span></span><br><span class="line">        <span class="type">UserService</span> <span class="variable">userService</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">UserServiceImpl</span>();</span><br><span class="line">        <span class="comment">//注册</span></span><br><span class="line">        SoulRpcFactory.registerService(UserService.class, userService);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>启动！😭：发现报错</p>
+<p><img src="https://cdn.jsdelivr.net/gh/SoulChay/figureBed@master/blog/rpc/r&z/1.png"></img></p>
+<p>原来是父节点没创建呀，搞什么啊，就这？直接加个判断解决它！</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//--此处代码省略--</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 初始化zk中的父节点/soul/rpc</span></span><br><span class="line">        List&lt;String&gt; children = connection.getConnection().getChildren(<span class="string">&quot;/&quot;</span>, <span class="literal">false</span>);</span><br><span class="line">        <span class="comment">// 不存在子节点 /soul</span></span><br><span class="line">        <span class="keyword">if</span>(!children.contains(<span class="string">&quot;soul&quot;</span>))&#123;</span><br><span class="line">            <span class="comment">// 创建节点/soul</span></span><br><span class="line">            connection.getConnection()</span><br><span class="line">                .create(<span class="string">&quot;/soul&quot;</span>, <span class="literal">null</span>, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</span><br><span class="line">        &#125;</span><br><span class="line">        List&lt;String&gt; soulChildren = connection.getConnection().getChildren(<span class="string">&quot;/soul&quot;</span>, <span class="literal">false</span>);</span><br><span class="line">        <span class="keyword">if</span>(!soulChildren.contains(<span class="string">&quot;rpc&quot;</span>))&#123;</span><br><span class="line">            connection.getConnection()</span><br><span class="line">                .create(<span class="string">&quot;/soul/rpc&quot;</span>, <span class="literal">null</span>, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">        <span class="comment">//初始化代码块发生异常的时候，抛出错误，中断虚拟机</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ExceptionInInitializerError</span>(e);</span><br><span class="line">    &#125;   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>完美启动</p>
+<p><img src="https://cdn.jsdelivr.net/gh/SoulChay/figureBed@master/blog/rpc/r&z/2.png"></img></p>
+<p>接下来去Zookeeper 瞅瞅，发现成功存入。那就查看一下value值。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/SoulChay/figureBed@master/blog/rpc/r&z/3.png"></img></p>
+<h2 id="7-服务端启动问题"><a href="#7-服务端启动问题" class="headerlink" title="7. 服务端启动问题"></a>7. 服务端启动问题</h2><h3 id="7-1-增加服务配置文件"><a href="#7-1-增加服务配置文件" class="headerlink" title="7.1 增加服务配置文件"></a>7.1 增加服务配置文件</h3><p>在上一步我们的服务端启动成功了，但是有个小问题哈，这时候我们只有一个 <code>UserService</code> 服务。当我们有多个服务时，我们难道要一个个在服务端一个个的注册调用吗？这也太麻烦了吧，所以我们仍然是使用配置文件来帮我们解决这个问题。</p>
+<h4 id="7-1-1-服务配置文件"><a href="#7-1-1-服务配置文件" class="headerlink" title="7.1.1 服务配置文件"></a>7.1.1 服务配置文件</h4><p><code>soul-rpc-services.properties:</code></p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#配置文件格式是：接口全命名=实现类全命名</span></span><br><span class="line"><span class="attr">com.soul.service.UserService</span>=<span class="string">com.soul.service.impl.UserServiceImpl</span></span><br><span class="line"><span class="attr">com.soul.service.CustomerService</span>=<span class="string">com.soul.service.impl.CustomerServiceImpl</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="7-1-2-加载配置文件"><a href="#7-1-2-加载配置文件" class="headerlink" title="7.1.2 加载配置文件"></a>7.1.2 加载配置文件</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SoulRpcFactory</span> &#123;</span><br><span class="line">    <span class="comment">//代码省略</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 用于读取初始化的配置对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Properties</span> <span class="variable">services</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Properties</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//代码省略</span></span><br><span class="line"></span><br><span class="line">            <span class="comment">//拿到配置文件(soul-rpc-services.properties)。如果有则自动初始化，没有则忽略后续逻辑</span></span><br><span class="line">            <span class="type">InputStream</span> <span class="variable">servicesInput</span> <span class="operator">=</span> SoulRpcFactory.class</span><br><span class="line">                    .getClassLoader().getResourceAsStream(<span class="string">&quot;soul-rpc-services.properties&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (servicesInput != <span class="literal">null</span>)&#123;</span><br><span class="line">                <span class="comment">//有配置 初始化</span></span><br><span class="line">                services.load(servicesInput);</span><br><span class="line">                <span class="comment">//遍历集合services</span></span><br><span class="line">                <span class="keyword">for</span>(Map.Entry&lt;Object,Object&gt; entry : services.entrySet())&#123;</span><br><span class="line">                    <span class="type">Object</span> <span class="variable">key</span> <span class="operator">=</span> entry.getKey();</span><br><span class="line">                    <span class="type">Object</span> <span class="variable">value</span> <span class="operator">=</span> services.get(key);</span><br><span class="line">                    Class&lt;Remote&gt; serviceInterface = (Class&lt;Remote&gt;) Class.forName(key.toString());</span><br><span class="line">                    <span class="type">Remote</span> <span class="variable">serviceObject</span> <span class="operator">=</span> (Remote) Class.forName(value.toString()).newInstance();</span><br><span class="line">                    <span class="comment">//有了接口的类对象以及服务的对象后，可以开始注册</span></span><br><span class="line">                    registry.registryService(serviceInterface,serviceObject);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ExceptionInInitializerError</span>(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//代码省略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="7-1-3-修改启动类"><a href="#7-1-3-修改启动类" class="headerlink" title="7.1.3 修改启动类"></a>7.1.3 修改启动类</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ServerApplication</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        Class.forName(<span class="string">&quot;com.soul.rpc.SoulRpcFactory&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-2-节点已创建问题"><a href="#7-2-节点已创建问题" class="headerlink" title="7.2 节点已创建问题"></a>7.2 节点已创建问题</h3><p>如果我们重复创建同一个节点，会报这个错误。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/SoulChay/figureBed@master/blog/rpc/r&z/4.png"></img></p>
+<p>那就想策略吧：每次创建前先进行一次查询判断，如果要创建的节点已经存在了，就先删除掉这个节点，然后重新创建新的节点。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SoulRpcRegistry</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//代码省略</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">registryService</span><span class="params">(Class&lt;? extends Remote&gt; serviceInterface, Remote serviceObject)</span> <span class="keyword">throws</span> IOException, KeeperException, InterruptedException &#123;</span><br><span class="line">        <span class="comment">//rmi = rmi://ip:port/com.soul.service.UserService</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">rmi</span> <span class="operator">=</span> <span class="string">&quot;rmi://&quot;</span> + ip + <span class="string">&quot;:&quot;</span> + port + <span class="string">&quot;/&quot;</span> + serviceInterface.getName();</span><br><span class="line">        <span class="comment">//拼接一个有规则的zk存储节点命名</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">path</span> <span class="operator">=</span> <span class="string">&quot;/soul/rpc/&quot;</span> + serviceInterface.getName();</span><br><span class="line">        <span class="comment">//把服务对象在RMI的registry中注册</span></span><br><span class="line">        Naming.rebind(rmi, serviceObject);</span><br><span class="line"></span><br><span class="line">        List&lt;String&gt; children = connection.getConnection().getChildren(<span class="string">&quot;/soul/rpc&quot;</span>, <span class="literal">false</span>);</span><br><span class="line">        <span class="comment">//如果节点已经存在，删除掉</span></span><br><span class="line">        <span class="keyword">if</span> (children.contains(serviceInterface.getName()))&#123;</span><br><span class="line">            <span class="type">Stat</span> <span class="variable">stat</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Stat</span>();</span><br><span class="line">            connection.getConnection().getData(path,<span class="literal">false</span>,stat);</span><br><span class="line">            connection.getConnection().delete(path,stat.getCversion());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//注册到Zookeeper</span></span><br><span class="line">        connection.getConnection().create(path, rmi.getBytes(),</span><br><span class="line">                ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);    </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//代码省略</span></span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>再次启动，成功运行！</p>
+<p><img src="https://cdn.jsdelivr.net/gh/SoulChay/figureBed@master/blog/rpc/r&z/5.png"></img></p>
+<h2 id="8-RMI-客户端"><a href="#8-RMI-客户端" class="headerlink" title="8. RMI 客户端"></a>8. RMI 客户端</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 测试基于自定义Rpc框架的客户端开发</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TestRpcClient</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="comment">//通过自定义框架，连接zk，获取接口的动态代理对象</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">UserService</span> <span class="variable">userService</span> <span class="operator">=</span> SoulRpcFactory.getServiceProxy(UserService.class);</span><br><span class="line">            System.out.println(userService.getClass().getName());</span><br><span class="line">            <span class="type">String</span> <span class="variable">res</span> <span class="operator">=</span> userService.getUser(<span class="string">&quot;SoulChay&quot;</span>);</span><br><span class="line">            System.out.println(<span class="string">&quot;远程服务返回查询结果：&quot;</span> + res);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>直接启动，直接成功！（不成功的也不会放上来是叭）</p>
+<p><img src="https://cdn.jsdelivr.net/gh/SoulChay/figureBed@master/blog/rpc/r&z/6.png"></img></p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>这样我们基于 (Zookeeper &amp; RMI) 的简单RPC框架就搭建好了。</p>
+<p>之后我会把它完善一下放在GitHub上，文章有不对的地方或者您有什么想法都欢迎评论留言。</p>
+<p>感谢阅读到最后！</p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    <div id="toc-footer" style="display: none"> 
+      <div id="toc-footer2" >
+        
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-RMI-%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="toc-number">2.</span> <span class="toc-text">1. RMI 服务端</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1%E5%AE%9A%E4%B9%89%E6%8E%A5%E5%8F%A3"><span class="toc-number">2.1.</span> <span class="toc-text">1.1定义接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2%E5%AE%9A%E4%B9%89%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%B1%BB"><span class="toc-number">2.2.</span> <span class="toc-text">1.2定义接口的实现类</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%B3%A8%E5%86%8C-RMI-%E6%9C%8D%E5%8A%A1"><span class="toc-number">3.</span> <span class="toc-text">2. 注册 RMI 服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E8%BF%9E%E6%8E%A5Zookeeper"><span class="toc-number">4.</span> <span class="toc-text">3. 连接Zookeeper</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Zookeeper%E6%B3%A8%E5%86%8C"><span class="toc-number">5.</span> <span class="toc-text">4. Zookeeper注册</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%88%9D%E5%A7%8B%E5%8C%96%E5%8F%82%E6%95%B0"><span class="toc-number">6.</span> <span class="toc-text">5. 初始化参数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">6.1.</span> <span class="toc-text">5.1 参数配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E5%8A%A0%E8%BD%BD%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">6.2.</span> <span class="toc-text">5.2 加载配置文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%B5%8B%E8%AF%95%E6%9C%8D%E5%8A%A1%E7%AB%AF"><span class="toc-number">7.</span> <span class="toc-text">6. 测试服务端</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E5%90%AF%E5%8A%A8%E9%97%AE%E9%A2%98"><span class="toc-number">8.</span> <span class="toc-text">7. 服务端启动问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E5%A2%9E%E5%8A%A0%E6%9C%8D%E5%8A%A1%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">8.1.</span> <span class="toc-text">7.1 增加服务配置文件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#7-1-1-%E6%9C%8D%E5%8A%A1%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">8.1.1.</span> <span class="toc-text">7.1.1 服务配置文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-1-2-%E5%8A%A0%E8%BD%BD%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">8.1.2.</span> <span class="toc-text">7.1.2 加载配置文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#7-1-3-%E4%BF%AE%E6%94%B9%E5%90%AF%E5%8A%A8%E7%B1%BB"><span class="toc-number">8.1.3.</span> <span class="toc-text">7.1.3 修改启动类</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E8%8A%82%E7%82%B9%E5%B7%B2%E5%88%9B%E5%BB%BA%E9%97%AE%E9%A2%98"><span class="toc-number">8.2.</span> <span class="toc-text">7.2 节点已创建问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-RMI-%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="toc-number">9.</span> <span class="toc-text">8. RMI 客户端</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="toc-number">10.</span> <span class="toc-text">写在最后</span></a></li></ol>
+        
+      </div>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&text=RPC(Zookeeper &amp; RMI)"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&title=RPC(Zookeeper &amp; RMI)"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&is_video=false&description=RPC(Zookeeper &amp; RMI)"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=RPC(Zookeeper &amp; RMI)&body=Check out this article: http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&title=RPC(Zookeeper &amp; RMI)"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&title=RPC(Zookeeper &amp; RMI)"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&title=RPC(Zookeeper &amp; RMI)"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&title=RPC(Zookeeper &amp; RMI)"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&name=RPC(Zookeeper &amp; RMI)&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2022/03/13/RPC(Zookeeper%20&amp;%20RMI)/&t=RPC(Zookeeper &amp; RMI)"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        <!-- 网站运行时间 -->
+        <span id="timeDate">载入天数...</span><span id="times">载入时分秒...</span>
+        <script>
+            var now = new Date(); 
+            function createtime() { 
+                var grt= new Date("05/06/2022 22:38:00");//建站时间 格式：月/日/年 时:分:秒
+                now.setTime(now.getTime()+250); 
+                days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+                hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+                if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+                mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+                seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+                snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+                document.getElementById("timeDate").innerHTML = "has been running for "+dnum+" d "; 
+                document.getElementById("times").innerHTML = hnum + " h " + mnum + " m " + snum + " s"; 
+            } 
+        setInterval("createtime()",250);
+        </script>
+
+        <!-- 导航栏 -->
+        <ul>
+          Copyright &copy;
+          
+          
+          2022
+          Soulchay
+        </ul>
+       
+      </div>
+      
+      <div class="footer-right">
+
+        <nav>
+          <!-- 导航栏 -->
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+
+          <!-- 不蒜子统计访问量 -->
+          <ul>
+                   
+              <span class="site-pv">
+                <i class="fa fa-eye"></i> 
+                  <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span class="site-uv">
+                <i class="fa fa-user"></i> 
+                  <span class="busuanzi-user" id="busuanzi_value_site_uv"></span>
+              </span>
+              
+            <script async src="/lib/busuanzi/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+
+
+</footer>
+
+    
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?5322d3f5365b142e868c4e1fd7131329";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'SoulChay/SoulChay.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'icy-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"left","width":140,"height":280},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
