@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="写在前面纪念一道 “非常没水平的题”。 今天是 2022.5.29，一个月没碰算法题目了，今天心血来潮想刷刷题目。 打开力扣每日一题，直接开干！ 123456789101112131415161718192021222324252627282930468. 验证IP地址给定一个字符串 queryIP。如果是有效的 IPv4 地址，返回 &quot;IPv4&quot; ；如果是有效的 IPv6 地">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nvm 的安装和使用">
+<meta property="og:url" content="http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/index.html">
+<meta property="og:site_name" content="22Cheney.">
+<meta property="og:description" content="写在前面纪念一道 “非常没水平的题”。 今天是 2022.5.29，一个月没碰算法题目了，今天心血来潮想刷刷题目。 打开力扣每日一题，直接开干！ 123456789101112131415161718192021222324252627282930468. 验证IP地址给定一个字符串 queryIP。如果是有效的 IPv4 地址，返回 &quot;IPv4&quot; ；如果是有效的 IPv6 地">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-05-29T07:19:00.000Z">
+<meta property="article:modified_time" content="2022-05-29T07:07:03.951Z">
+<meta property="article:author" content="Soulchay">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Algorithm">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>nvm 的安装和使用</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="22Cheney." type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2022/05/27/%E5%AD%A6%E9%99%A2%E7%9A%84%E7%9F%A5%E8%AF%86%E7%82%B9%E5%B7%A9%E5%9B%BA/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&text=nvm 的安装和使用"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&title=nvm 的安装和使用"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&is_video=false&description=nvm 的安装和使用"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=nvm 的安装和使用&body=Check out this article: http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&title=nvm 的安装和使用"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&title=nvm 的安装和使用"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&title=nvm 的安装和使用"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&title=nvm 的安装和使用"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&name=nvm 的安装和使用&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&t=nvm 的安装和使用"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    
+    <div id="toc" >
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E4%BB%A3%E7%A0%81"><span class="toc-number">2.</span> <span class="toc-text">我的代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%90%8E%E9%9D%A2"><span class="toc-number">3.</span> <span class="toc-text">写在后面</span></a></li></ol>
+      
+    </div>
+  </span>
+
+  
+
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        nvm 的安装和使用
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Soulchay</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-05-29T07:19:00.000Z" itemprop="datePublished">2022-05-29</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Algorithm/" rel="tag">Algorithm</a>, <a class="tag-link-link" href="/tags/Java/" rel="tag">Java</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>纪念一道 “非常没水平的题”。</p>
+<p>今天是 2022.5.29，一个月没碰算法题目了，今天心血来潮想刷刷题目。</p>
+<p>打开力扣每日一题，直接开干！</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">468. 验证IP地址</span><br><span class="line">给定一个字符串 queryIP。如果是有效的 IPv4 地址，返回 &quot;IPv4&quot; ；如果是有效的 IPv6 地址，返回 &quot;IPv6&quot; ；如果不是上述类型的 IP 地址，返回 &quot;Neither&quot; 。</span><br><span class="line"></span><br><span class="line">有效的IPv4地址 是 “x1.x2.x3.x4” 形式的IP地址。 其中 0 &lt;= xi &lt;= 255 且 xi 不能包含 前导零。例如: “192.168.1.1” 、 “192.168.1.0” 为有效IPv4地址， “192.168.01.1” 为无效IPv4地址; “192.168.1.00” 、 “192.168@1.1” 为无效IPv4地址。</span><br><span class="line"></span><br><span class="line">一个有效的IPv6地址 是一个格式为“x1:x2:x3:x4:x5:x6:x7:x8” 的IP地址，其中:</span><br><span class="line">1. 1 &lt;= xi.length &lt;= 4</span><br><span class="line">2. xi 是一个 十六进制字符串 ，可以包含数字、小写英文字母( &#x27;a&#x27; 到 &#x27;f&#x27; )和大写英文字母( &#x27;A&#x27; 到 &#x27;F&#x27; )。</span><br><span class="line">3. 在 xi 中允许前导零。</span><br><span class="line">例如 &quot;2001:0db8:85a3:0000:0000:8a2e:0370:7334&quot; 和 &quot;2001:db8:85a3:0:0:8A2E:0370:7334&quot; 是有效的 IPv6 地址，而 &quot;2001:0db8:85a3::8A2E:037j:7334&quot; 和 &quot;02001:0db8:85a3:0000:0000:8a2e:0370:7334&quot; 是无效的 IPv6 地址。</span><br><span class="line"></span><br><span class="line">示例 1：</span><br><span class="line"></span><br><span class="line">输入：queryIP = &quot;172.16.254.1&quot;</span><br><span class="line">输出：&quot;IPv4&quot;</span><br><span class="line">解释：有效的 IPv4 地址，返回 &quot;IPv4&quot;</span><br><span class="line">示例 2：</span><br><span class="line"></span><br><span class="line">输入：queryIP = &quot;2001:0db8:85a3:0:0:8A2E:0370:7334&quot;</span><br><span class="line">输出：&quot;IPv6&quot;</span><br><span class="line">解释：有效的 IPv6 地址，返回 &quot;IPv6&quot;</span><br><span class="line">示例 3：</span><br><span class="line"></span><br><span class="line">输入：queryIP = &quot;256.256.256.256&quot;</span><br><span class="line">输出：&quot;Neither&quot;</span><br><span class="line">解释：既不是 IPv4 地址，又不是 IPv6 地址</span><br><span class="line"></span><br><span class="line">来源：力扣（LeetCode）</span><br><span class="line">链接：https://leetcode.cn/problems/validate-ip-address</span><br><span class="line">著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。</span><br></pre></td></tr></table></figure>
+
+<p>好家伙，我一看就笑了，这不就是平时写程序的 <code>if + else if + else</code> 嘛，就这还中等题？ 面向应用编程是叭？</p>
+<p>结果过了40多分钟我才进行第一次提交，1小时左右才AC，别问我那20分钟改什么了，只能说太粗心了😭。</p>
+<p>而且我的代码，真的是又臭又长😑</p>
+<p>贴上来给你们看看。。。</p>
+<h2 id="我的代码"><a href="#我的代码" class="headerlink" title="我的代码"></a>我的代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">validIPAddress</span><span class="params">(String queryIP)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span>(judgeIPv4(queryIP))&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;IPv4&quot;</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(judgeIPv6(queryIP))&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;IPv6&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Neither&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">judgeIPv4</span><span class="params">(String str)</span>&#123;</span><br><span class="line">        <span class="comment">//判断是否有3个点</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">pointCnt</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;str.length(); i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(str.charAt(i) == <span class="string">&#x27;.&#x27;</span>) pointCnt++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(pointCnt != <span class="number">3</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//处理前三个点前面的字符串</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="number">3</span>; i++)&#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> str.indexOf(<span class="string">&#x27;.&#x27;</span>);</span><br><span class="line">            <span class="type">String</span> <span class="variable">str1</span> <span class="operator">=</span> str.substring(<span class="number">0</span>,index);</span><br><span class="line">            <span class="keyword">if</span>(!judge4(str1)) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            <span class="comment">//更新str</span></span><br><span class="line">            str = str.substring(index+<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//处理第三个冒号后剩下的字符串</span></span><br><span class="line">        <span class="keyword">return</span> judge4(str);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">judge4</span><span class="params">(String str)</span>&#123;</span><br><span class="line">        <span class="comment">//1.长度过长过短或者前置为0则返回false</span></span><br><span class="line">        <span class="keyword">if</span>(str.length() &lt; <span class="number">1</span> || str.length() &gt; <span class="number">3</span> || (str.length() &gt; <span class="number">1</span> &amp;&amp; str.indexOf(<span class="string">&quot;0&quot;</span>) == <span class="number">0</span>)) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        <span class="comment">//2.判断每个字符是否都是数字</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> m=<span class="number">0</span>; m&lt;str.length(); m++)&#123;</span><br><span class="line">            <span class="type">char</span> <span class="variable">c</span> <span class="operator">=</span> str.charAt(m);</span><br><span class="line">            <span class="keyword">if</span>(c &lt; <span class="string">&#x27;0&#x27;</span> || c &gt; <span class="string">&#x27;9&#x27;</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//3.判断数字的范围是否合法</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">strInt</span> <span class="operator">=</span> Integer.parseInt(str);</span><br><span class="line">        <span class="keyword">if</span>(strInt &lt; <span class="number">0</span> || strInt &gt; <span class="number">255</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">judgeIPv6</span><span class="params">(String str)</span>&#123;</span><br><span class="line">        <span class="comment">//判断是否有7个冒号</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">pointCnt</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;str.length(); i++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(str.charAt(i) == <span class="string">&#x27;:&#x27;</span>) pointCnt++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(pointCnt != <span class="number">7</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//处理前七个冒号前面的字符串</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="number">7</span>; i++)&#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> str.indexOf(<span class="string">&#x27;:&#x27;</span>);</span><br><span class="line">            <span class="type">String</span> <span class="variable">str1</span> <span class="operator">=</span> str.substring(<span class="number">0</span>,index);</span><br><span class="line">            <span class="keyword">if</span>(!judge6(str1)) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            <span class="comment">//更新str</span></span><br><span class="line">            str = str.substring(index+<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//处理第三个冒号后剩下的字符串</span></span><br><span class="line">        <span class="keyword">return</span> judge6(str);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">judge6</span><span class="params">(String str)</span>&#123;</span><br><span class="line">        <span class="comment">//1.长度过长则返回false</span></span><br><span class="line">        <span class="keyword">if</span>(str.length() &lt; <span class="number">1</span> || str.length() &gt; <span class="number">4</span>) <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        <span class="comment">//2.判断每个字符是否都是数字或字母</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> m=<span class="number">0</span>; m&lt;str.length(); m++) &#123;</span><br><span class="line">            <span class="type">char</span> <span class="variable">c</span> <span class="operator">=</span> str.charAt(m);</span><br><span class="line">            <span class="keyword">if</span> (c &gt;= <span class="string">&#x27;0&#x27;</span> &amp;&amp; c &lt;= <span class="string">&#x27;9&#x27;</span>) &#123;&#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span>(c &gt;= <span class="string">&#x27;A&#x27;</span> &amp;&amp; c &lt;= <span class="string">&#x27;F&#x27;</span>)&#123;&#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (c &gt;= <span class="string">&#x27;a&#x27;</span> &amp;&amp; c &lt;= <span class="string">&#x27;f&#x27;</span>)&#123;&#125;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="写在后面"><a href="#写在后面" class="headerlink" title="写在后面"></a>写在后面</h2><p>说实话，这道题真的是出的”非常没水平”，但确实是我们在编写程序时最常遇到的情景，非常考验我们思维的缜密性。以我的代码作为反例，如果只追求满足需求就完事，而不考虑其他一些更优雅的方法，写的代码只会越来越 “Shit 山”。好嘞我要去改我的代码了，拜拜拜拜！</p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    <div id="toc-footer" style="display: none"> 
+      <div id="toc-footer2" >
+        
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%88%91%E7%9A%84%E4%BB%A3%E7%A0%81"><span class="toc-number">2.</span> <span class="toc-text">我的代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%90%8E%E9%9D%A2"><span class="toc-number">3.</span> <span class="toc-text">写在后面</span></a></li></ol>
+        
+      </div>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&text=nvm 的安装和使用"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&title=nvm 的安装和使用"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&is_video=false&description=nvm 的安装和使用"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=nvm 的安装和使用&body=Check out this article: http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&title=nvm 的安装和使用"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&title=nvm 的安装和使用"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&title=nvm 的安装和使用"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&title=nvm 的安装和使用"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&name=nvm 的安装和使用&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/&t=nvm 的安装和使用"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        <!-- 网站运行时间 -->
+        <span id="timeDate">载入天数...</span><span id="times">载入时分秒...</span>
+        <script>
+            var now = new Date(); 
+            function createtime() { 
+                var grt= new Date("05/06/2022 22:38:00");//建站时间 格式：月/日/年 时:分:秒
+                now.setTime(now.getTime()+250); 
+                days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+                hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+                if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+                mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+                seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+                snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+                document.getElementById("timeDate").innerHTML = "has been running for "+dnum+" d "; 
+                document.getElementById("times").innerHTML = hnum + " h " + mnum + " m " + snum + " s"; 
+            } 
+        setInterval("createtime()",250);
+        </script>
+
+        <!-- 导航栏 -->
+        <ul>
+          Copyright &copy;
+          
+          
+          2022
+          Soulchay
+        </ul>
+       
+      </div>
+      
+      <div class="footer-right">
+
+        <nav>
+          <!-- 导航栏 -->
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+
+          <!-- 不蒜子统计访问量 -->
+          <ul>
+                   
+              <span class="site-pv">
+                <i class="fa fa-eye"></i> 
+                  <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span class="site-uv">
+                <i class="fa fa-user"></i> 
+                  <span class="busuanzi-user" id="busuanzi_value_site_uv"></span>
+              </span>
+              
+            <script async src="/lib/busuanzi/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+
+
+</footer>
+
+    
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?5322d3f5365b142e868c4e1fd7131329";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'SoulChay/SoulChay.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'icy-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"left","width":140,"height":280},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
