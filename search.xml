@@ -4,6 +4,29 @@
   
     
     <entry>
+      <title>ThreadLocal 八股文</title>
+      <link href="/2022/06/01/ThreadLocal%E5%85%AB%E8%82%A1%E6%96%87/"/>
+      <url>/2022/06/01/ThreadLocal%E5%85%AB%E8%82%A1%E6%96%87/</url>
+      
+        <content type="html"><![CDATA[<h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>文章为本人参考<a href="https://mp.weixin.qq.com/s?__biz=MzU4NzA3MTc5Mg==&mid=2247485314&idx=1&sn=cab8fb85edd454cb32ee7c0da6ab107d&scene=21#wechat_redirect">《对线面试官》ThreadLocal</a> ，方便查阅记忆整理出来的。</p><h2 id="ThreadLocal-原理"><a href="#ThreadLocal-原理" class="headerlink" title="ThreadLocal 原理"></a>ThreadLocal 原理</h2><p>①：ThreadLocal是一个壳子，真正的存储结构是 ThreadLocal 里有 ThreadLocalMap 这么个内部类</p><p>②：ThreadLocalMap 的引用是在Thread上定义的</p><p>③：ThreadLocal本身并不存储值，它只是作为 key 来让线程从 ThreadLocalMap 获取 value</p><p>④：得出的结论就是 ThreadLocalMap 该结构本身就在 Thread下 定义，而 ThreadLocal 只是作为 key，存储到 ThreadLocalMap 的变量当然是线程私有的。</p><p><img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220601202202.png"></img></p><h2 id="为什么ThreadLocal作为key，而不是Thread作为key？"><a href="#为什么ThreadLocal作为key，而不是Thread作为key？" class="headerlink" title="为什么ThreadLocal作为key，而不是Thread作为key？"></a>为什么ThreadLocal作为key，而不是Thread作为key？</h2><p>①：理论上是可以，但没那么优雅。</p><p>②：你提出的做法实际上就是所有的线程都访问ThreadLocal的Map，而key是当前线程</p><p>③：但这有点小问题，一个线程是可以拥有多个私有变量的嘛，那key如果是当前线程的话，意味着还点做点「手脚」来唯一标识set进去的value</p><p>④：假设上一步解决了，还有个问题就是；并发量足够大时，意味着所有的线程都去操作同一个Map，Map体积有可能会膨胀，导致访问性能的下降</p><p>⑤：这个Map维护着所有的线程的私有变量，意味着你不知道什么时候可以「销毁」</p><p>⑥：现在JDK实现的结构就不一样了。线程需要多个私有变量，那有多个ThreadLocal对象足以，对应的Map体积不会太大，只要线程销毁了，ThreadLocalMap也会被销毁</p><img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220601202228.png"/><h2 id="内存泄漏是什么"><a href="#内存泄漏是什么" class="headerlink" title="内存泄漏是什么"></a>内存泄漏是什么</h2><p>内存泄漏：申请内存后用完但没有释放掉，自己没法用，系统又没法回收。</p><h2 id="讲一讲-ThreadLocal-的内存泄露"><a href="#讲一讲-ThreadLocal-的内存泄露" class="headerlink" title="讲一讲 ThreadLocal 的内存泄露"></a>讲一讲 ThreadLocal 的内存泄露</h2><p>①：ThreadLocal内存泄露指的是：ThreadLocal 被回收了，ThreadLocalMap Entry 的 key 没有了指向，发生的概率非常低。</p><p>②：回到原理上，我们知道 Thread 在创建的时候，会有栈引用指向 Thread对象，Thread对象内部维护了 ThreadLocalMap 引用，而 ThreadLocalMap 的Key是 ThreadLocal，value 是传入的 Object，ThreadLocal 对象会被对应的栈引用关联，ThreadLocalMap 的key也指向着 ThreadLocal，即</p><ul><li><code>ThreadLocalRef &amp;&amp; ThreadLocalMap Entry key -&gt; ThreadLocal</code></li><li><code>ThreadRef-&gt;Thread-&gt;ThreadLoalMap-&gt; Entry value-&gt; Object</code></li></ul><p>③：ThreadLocal 现在被回收了，但Entry仍然有 <code>ThreadRef-&gt;Thread-&gt;ThreadLoalMap-&gt; Entry value-&gt; Object </code> 这条引用一直存在，这就导致了内存泄露</p><p>④：为什么说导致内存泄露的概率非常低呢？</p><ol><li><p>首先ThreadLocal被两种引用指向</p><ul><li><p><code>ThreadLocalRef-&gt; ThreadLocal（强引用）</code></p></li><li><p><code>ThreadLocalMap Entry key -&gt; ThreadLocal（弱引用）</code></p></li></ul></li><li><p>只要 ThreadLocal 没被回收（使用时强引用不置null），那 ThreadLocalMap Entry key 的指向就不会在GC时断开被回收，也没有内存泄露一说法。</p></li><li><p>通过 ThreadLocal 了解实现后，又 ThreadLocalMap 是依附在Thread上的，只要 Thread 销毁，那 ThreadLocalMap 也会销毁，那非线程池环境下，也不会有长期性的内存泄露问题</p></li><li><p>而ThreadLocal实现下还做了些 “保护” 措施，如果在操作 ThreadLocal 时，发现 key 为 null，会将其清除掉。所以，如果在线程池（线程复用）环境下，如果还会调用 ThreadLocal 的 set&#x2F;get&#x2F;remove 方法，发现 key 为 null 会进行清除，不会有长期性的内存泄露问题</p></li><li><p>那存在长期性内存泄露需要满足条件：ThreadLocal 被回收 &amp;&amp; 线程被复用 &amp;&amp; 线程复用后不再调用 ThreadLocal 的 set&#x2F;get&#x2F;remove 方法</p></li><li><p>使用ThreadLocal的最佳实践就是：用完了，手动remove掉。</p></li></ol><img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220601202250.png" alt="图片" style="zoom:80%;" /><h2 id="为什么将-ThreadLocalMap-的key-设置为弱引用"><a href="#为什么将-ThreadLocalMap-的key-设置为弱引用" class="headerlink" title="为什么将 ThreadLocalMap 的key 设置为弱引用"></a>为什么将 ThreadLocalMap 的key 设置为弱引用</h2><p>①：外界是通过 ThreadLocal 来对 ThreadLocalMap 进行操作的，假设外界使用 ThreadLocal 的对象被置null了，那 ThreadLocalMap 的强引用指向 ThreadLocal 会毫无意义。</p><p>②：弱引用反而可以预防大多数内存泄漏的情况，毕竟被回收后，下一次调用 set&#x2F;get&#x2F;remove 时 ThreadLocal 内部会清除掉</p><h2 id="为什么网上有很多人建议把ThreadLocal修饰为static"><a href="#为什么网上有很多人建议把ThreadLocal修饰为static" class="headerlink" title="为什么网上有很多人建议把ThreadLocal修饰为static"></a>为什么网上有很多人建议把ThreadLocal修饰为static</h2><p>①：ThreadLocal 能实现了线程的数据隔离，不在于它自己本身，而在于 Thread 的 ThreadLocalMap</p><p>②：所以，ThreadLocal 可以只初始化一次，只分配一块存储空间就足以了，没必要作为成员变量多次被初始化。</p><h2 id="ThreadLocal实际用处（举例）"><a href="#ThreadLocal实际用处（举例）" class="headerlink" title="ThreadLocal实际用处（举例）"></a><strong>ThreadLocal实际用处</strong>（举例）</h2><p>①：Spring提供了事务相关的操作，而我们知道事务是得保证一组操作同时成功或失败的，这意味着我们一次事务的所有操作需要在同一个数据库连接上，但是在我们日常写代码的时候是不需要关注这点的</p><p>②：Spring 就是用的 ThreadLocal 来实现，ThreadLocal 存储的类型是一个 Map</p><p>③：Map 中的 key 是DataSource，value 是Connection（为了应对多数据源的情况，所以是一个Map）</p><p>④：用了 ThreadLocal 保证了同一个线程获取一个 Connection 对象，从而保证一次事务的所有操作需要在同一个数据库连接上</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> Java </tag>
+            
+            <tag> 八股文 </tag>
+            
+            <tag> 多线程 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>CAS &amp; Synchronized 八股文</title>
       <link href="/2022/05/31/CAS&amp;Synchronized%E5%85%AB%E8%82%A1%E6%96%87/"/>
       <url>/2022/05/31/CAS&amp;Synchronized%E5%85%AB%E8%82%A1%E6%96%87/</url>
