@@ -13,19 +13,19 @@
 <meta property="og:site_name" content="22Cheney.">
 <meta property="og:description" content="Serial  收集器 ①：是单线程回收器，历史最悠久 ②：工作时会 “Stop The World”  ③：新生代采用 标记 - 复制 算法，老年代采用 标记 - 整理算法 ④：简单高效，有较高单线程收集效率，对于运行在 Client 模式下的虚拟机而言是个不错的选择 ⑤：能够与 CMS 垃圾收集器配合使用 ParNew  收集器 ①：Serical 的多线程版本 ②：新生代采用 标记 - 复制">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://javaguide.cn/assets/46873026.3a9311ec.png">
-<meta property="og:image" content="https://javaguide.cn/assets/22018368.df835851.png">
-<meta property="og:image" content="https://javaguide.cn/assets/22018368.df835851.png">
-<meta property="og:image" content="https://javaguide.cn/assets/CMS%E6%94%B6%E9%9B%86%E5%99%A8.8a4d0487.png">
-<meta property="og:image" content="https://pic1.zhimg.com/80/v2-669ab989756f3aafe7d85b468d01a2ac_1440w.jpg">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos\bagu\20220601183341.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos\bagu\20220601183402.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos\bagu\20220601183426.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos\bagu\20220601183449.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos\bagu\20220601183521.png">
 <meta property="article:published_time" content="2022-04-30T10:29:31.000Z">
-<meta property="article:modified_time" content="2022-05-31T04:40:33.952Z">
+<meta property="article:modified_time" content="2022-06-01T10:35:40.522Z">
 <meta property="article:author" content="Soulchay">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="Jvm">
 <meta property="article:tag" content="八股文">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://javaguide.cn/assets/46873026.3a9311ec.png">
+<meta name="twitter:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos\bagu\20220601183341.png">
     
     
       
@@ -166,18 +166,18 @@
   
 
   <div class="content" itemprop="articleBody">
-    <h2 id="Serial-收集器"><a href="#Serial-收集器" class="headerlink" title="Serial  收集器"></a>Serial  收集器</h2><p><img src="https://javaguide.cn/assets/46873026.3a9311ec.png" alt=" Serial 收集器 "></p>
+    <h2 id="Serial-收集器"><a href="#Serial-收集器" class="headerlink" title="Serial  收集器"></a>Serial  收集器</h2><p><img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos\bagu\20220601183341.png"></img></p>
 <p>①：是单线程回收器，历史最悠久</p>
 <p>②：工作时会 “Stop The World” </p>
 <p>③：新生代采用 标记 - 复制 算法，老年代采用 标记 - 整理算法</p>
 <p>④：简单高效，有较高单线程收集效率，对于运行在 Client 模式下的虚拟机而言是个不错的选择</p>
 <p>⑤：能够与 CMS 垃圾收集器配合使用</p>
-<h2 id="ParNew-收集器"><a href="#ParNew-收集器" class="headerlink" title="ParNew  收集器"></a>ParNew  收集器</h2><p><img src="https://javaguide.cn/assets/22018368.df835851.png" alt="ParNew 收集器 "></p>
+<h2 id="ParNew-收集器"><a href="#ParNew-收集器" class="headerlink" title="ParNew  收集器"></a>ParNew  收集器</h2><p><img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos\bagu\20220601183402.png"></img></p>
 <p>①：Serical 的多线程版本</p>
 <p>②：新生代采用 标记 - 复制 算法，老年代采用 标记 - 整理算法</p>
 <p>③：默认开始线程数与CPU核数相同</p>
 <p>④：能够与 CMS 垃圾收集器配合使用</p>
-<h2 id="Parallel-Scavenge-收集器"><a href="#Parallel-Scavenge-收集器" class="headerlink" title="Parallel Scavenge  收集器"></a>Parallel Scavenge  收集器</h2><p><img src="https://javaguide.cn/assets/22018368.df835851.png" alt="Parallel Scavenge 收集器 "></p>
+<h2 id="Parallel-Scavenge-收集器"><a href="#Parallel-Scavenge-收集器" class="headerlink" title="Parallel Scavenge  收集器"></a>Parallel Scavenge  收集器</h2><p><img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos\bagu\20220601183426.png"></img></p>
 <p>①：关注点是系统吞吐量（代码运行时间 &#x2F; CPU总耗时时间）和高效利用 CPU，而 CMS 等垃圾收集器更多关注的是用户停顿时间（用户体验）</p>
 <p>②：新生代采用 标记 - 复制 算法，老年代采用 标记 - 整理算法</p>
 <h2 id="Serial-Old-收集器"><a href="#Serial-Old-收集器" class="headerlink" title="Serial Old 收集器"></a>Serial Old 收集器</h2><p>①：Serial 垃圾收集器的老年代版本</p>
@@ -190,7 +190,8 @@
 <p>②：HotSpot 虚拟机第一款真正意义上的并发收集器，一定程度上实现了用户线程和垃圾回收线程的同时工作</p>
 <p>③：使用 标记 - 清除 算法</p>
 <p>④：回收过程：初始标记、并发标记、并发预清理、重新标记以及并发清除</p>
-<p><img src="https://javaguide.cn/assets/CMS%E6%94%B6%E9%9B%86%E5%99%A8.8a4d0487.png" alt="CMS 垃圾收集器 "></p>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos\bagu\20220601183449.png"/>
+
 <ol>
 <li>初始标记：标记GCRoots「直接关联」的对象以及「年轻代」指向「老年代」的对象（Stop The World），速度很快</li>
 <li>并发标记：同时开启 GC 和用户线程。这一阶段主要是从GC Roots向下「追溯」，标记所有可达的对象。比较耗费时间的（需要追溯）</li>
@@ -212,7 +213,7 @@
 <p>②：满足GC停顿时间要求的同时，还具备高吞吐量性能</p>
 <p>③：整体看采用 “标记 - 整理” 算法，局部看采用 “标记 - 复制” 算法</p>
 <p>④：新生代（Eden、S1、S0），老年代（Old）等不再按照物理划分，而是按照逻辑划分。将堆内存「逻辑」划分为多个Region，增添了Humongous（大对象区域），其实就是用来存储特别大的对象（大于Region内存的一半），一旦发现没有引用指向大对象，就可直接在年轻代的Minor GC中被回收掉。</p>
-<img src="https://pic1.zhimg.com/80/v2-669ab989756f3aafe7d85b468d01a2ac_1440w.jpg" alt="img" style="zoom: 50%;" />
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos\bagu\20220601183521.png" alt="img" style="zoom: 50%;" />
 
 <p>⑤：为什么要将「堆空间」进行「细分」多个小的区域？</p>
 <p>如果堆空间（内存）大的时候，每次进行「垃圾回收」都需要对一整块大的区域进行回收，那收集的时间是不好控制的，而划分多个小区域之后，那对这些「小区域」回收就容易控制它的「收集时间」了。</p>

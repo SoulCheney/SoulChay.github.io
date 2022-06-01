@@ -13,16 +13,16 @@
 <meta property="og:site_name" content="22Cheney.">
 <meta property="og:description" content="进程和线程的区别①：进程是系统进行资源分配和调度的独立单位，每一个进程都有它自己的内存空间和系统资源 ②：进程实现多处理机环境下的进程调度，分派，切换时，都需要花费较大的时间和空间开销 ③：为了提高系统的执行效率，减少处理机的空转时间和调度切换的时间，以及便于系统管理，所以有了线程，线程取代了进程了调度的基本功能。简单来说，进程作为资源分配的基本单位，线程作为资源调度的基本单位 为什么要使用多线程">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/E44aHibktsKagba0yianrh96EZzIsUNQMmAvr0zxV3B7rPDpjdo1YyURec7Ew7uCFXP8tibBocyCiaM8qewFWFPttQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1">
-<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/E44aHibktsKagba0yianrh96EZzIsUNQMmHN9Lxuy8nDgFqcGN4RQTU7PGN7enia7ayTJ8MTEtZJSzqckS3x5kYHg/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos\bagu\20220601184258.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos\bagu\20220601184316.png">
 <meta property="article:published_time" content="2022-05-31T06:29:31.000Z">
-<meta property="article:modified_time" content="2022-06-01T02:19:37.881Z">
+<meta property="article:modified_time" content="2022-06-01T10:43:35.011Z">
 <meta property="article:author" content="Soulchay">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="八股文">
 <meta property="article:tag" content="多线程">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/E44aHibktsKagba0yianrh96EZzIsUNQMmAvr0zxV3B7rPDpjdo1YyURec7Ew7uCFXP8tibBocyCiaM8qewFWFPttQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1">
+<meta name="twitter:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos\bagu\20220601184258.png">
     
     
       
@@ -196,7 +196,7 @@
 <li><p>如果是集合，考虑 <code>java.util.concurrent</code> 包下的集合类。</p>
 </li>
 <li><p>如果 <code>synchronized</code> 无法满足，考虑 <code>lock</code> 包下的类</p>
-<img src="https://mmbiz.qpic.cn/mmbiz_jpg/E44aHibktsKagba0yianrh96EZzIsUNQMmAvr0zxV3B7rPDpjdo1YyURec7Ew7uCFXP8tibBocyCiaM8qewFWFPttQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片" style="zoom:67%;" /></li>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos\bagu\20220601184258.png" alt="图片" style="zoom:67%;" /></li>
 </ul>
 <p>总的来说，就是先判断有没有线程安全问题，如果存在则根据具体的情况去判断使用什么方式去处理线程安全的问题。虽然 <code>synchronized</code> 很有效果，但无脑使用是会影响我们程序的性能的。</p>
 <h2 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h2><p>造成死锁的原因可以简单概括为：当前线程拥有其他线程需要的资源，当前线程等待其他线程已拥有的资源，但是都不放弃自己拥有的资源。</p>
@@ -206,8 +206,7 @@
 <li>尽可能缩减加锁的范围，等到操作共享变量的时候才加锁。</li>
 <li>使用可释放的定时锁（一段时间申请不到锁的权限了，直接释放掉）</li>
 </ol>
-<p><img src="https://mmbiz.qpic.cn/mmbiz_jpg/E44aHibktsKagba0yianrh96EZzIsUNQMmHN9Lxuy8nDgFqcGN4RQTU7PGN7enia7ayTJ8MTEtZJSzqckS3x5kYHg/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
-
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos\bagu\20220601184316.png"/>
   </div>
 </article>
 
