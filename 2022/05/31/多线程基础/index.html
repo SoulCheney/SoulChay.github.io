@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="进程和线程的区别①：进程是系统进行资源分配和调度的独立单位，每一个进程都有它自己的内存空间和系统资源 ②：进程实现多处理机环境下的进程调度，分派，切换时，都需要花费较大的时间和空间开销 ③：为了提高系统的执行效率，减少处理机的空转时间和调度切换的时间，以及便于系统管理，所以有了线程，线程取代了进程了调度的基本功能。简单来说，进程作为资源分配的基本单位，线程作为资源调度的基本单位 为什么要使用多线程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多线程基础">
+<meta property="og:url" content="http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="22Cheney.">
+<meta property="og:description" content="进程和线程的区别①：进程是系统进行资源分配和调度的独立单位，每一个进程都有它自己的内存空间和系统资源 ②：进程实现多处理机环境下的进程调度，分派，切换时，都需要花费较大的时间和空间开销 ③：为了提高系统的执行效率，减少处理机的空转时间和调度切换的时间，以及便于系统管理，所以有了线程，线程取代了进程了调度的基本功能。简单来说，进程作为资源分配的基本单位，线程作为资源调度的基本单位 为什么要使用多线程">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/E44aHibktsKagba0yianrh96EZzIsUNQMmAvr0zxV3B7rPDpjdo1YyURec7Ew7uCFXP8tibBocyCiaM8qewFWFPttQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/E44aHibktsKagba0yianrh96EZzIsUNQMmHN9Lxuy8nDgFqcGN4RQTU7PGN7enia7ayTJ8MTEtZJSzqckS3x5kYHg/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1">
+<meta property="article:published_time" content="2022-05-31T06:29:31.000Z">
+<meta property="article:modified_time" content="2022-06-01T02:19:37.881Z">
+<meta property="article:author" content="Soulchay">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="八股文">
+<meta property="article:tag" content="多线程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/E44aHibktsKagba0yianrh96EZzIsUNQMmAvr0zxV3B7rPDpjdo1YyURec7Ew7uCFXP8tibBocyCiaM8qewFWFPttQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>多线程基础</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="22Cheney." type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2022/05/31/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E5%85%AB%E8%82%A1%E6%96%87/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2022/05/29/%E9%AA%8C%E8%AF%81IP%E5%9C%B0%E5%9D%80/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&text=多线程基础"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&title=多线程基础"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&is_video=false&description=多线程基础"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=多线程基础&body=Check out this article: http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&title=多线程基础"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&title=多线程基础"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&title=多线程基础"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&title=多线程基础"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&name=多线程基础&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&t=多线程基础"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    
+    <div id="toc" >
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">1.</span> <span class="toc-text">进程和线程的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">为什么要使用多线程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91%E4%B8%AD%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">3.</span> <span class="toc-text">实际开发中多线程的使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="toc-number">4.</span> <span class="toc-text">线程安全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%8E%E4%B9%88%E8%A7%A3%E5%86%B3%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98"><span class="toc-number">5.</span> <span class="toc-text">怎么解决线程安全问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%BB%E9%94%81"><span class="toc-number">6.</span> <span class="toc-text">死锁</span></a></li></ol>
+      
+    </div>
+  </span>
+
+  
+
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        多线程基础
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Soulchay</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-05-31T06:29:31.000Z" itemprop="datePublished">2022-05-31</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Java/" rel="tag">Java</a>, <a class="tag-link-link" href="/tags/%E5%85%AB%E8%82%A1%E6%96%87/" rel="tag">八股文</a>, <a class="tag-link-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="进程和线程的区别"><a href="#进程和线程的区别" class="headerlink" title="进程和线程的区别"></a>进程和线程的区别</h2><p>①：进程是系统进行资源分配和调度的独立单位，每一个进程都有它自己的内存空间和系统资源</p>
+<p>②：进程实现多处理机环境下的进程调度，分派，切换时，都需要花费较大的时间和空间开销</p>
+<p>③：为了提高系统的执行效率，减少处理机的空转时间和调度切换的时间，以及便于系统管理，所以有了线程，线程取代了进程了调度的基本功能。简单来说，进程作为资源分配的基本单位，线程作为资源调度的基本单位</p>
+<h2 id="为什么要使用多线程"><a href="#为什么要使用多线程" class="headerlink" title="为什么要使用多线程"></a>为什么要使用多线程</h2><p>①：使用多线程最主要的原因是提高系统的资源利用率。</p>
+<p>②：现在CPU基本都是多核的，如果只用单线程，那就是只用到了一个核心，其他的核心就相当于空闲在那里了。</p>
+<p>③：多线程应用举例：</p>
+<ul>
+<li><p>Tomcat处理每一个请求都会从线程连接池里边用一个线程去处理。</p>
+</li>
+<li><p>连接数据库会用对应的连接池 Druid&#x2F;C3P0&#x2F;DBCP…</p>
+</li>
+</ul>
+<h2 id="实际开发中多线程的使用"><a href="#实际开发中多线程的使用" class="headerlink" title="实际开发中多线程的使用"></a>实际开发中多线程的使用</h2><p>比如说，现在要跑一个定时任务，该任务的链路执行时间和过程都非常长，我这边就用一个线程池将该定时任务的请求进行处理。</p>
+<p>这样做的好处就是可以及时返回结果给调用方，能够提高系统的吞吐量。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 请求直接交给线程池来处理</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">push</span><span class="params">(PushParam pushParam)</span> &#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    pushServiceThreadExecutor.submit(() -&gt; &#123;</span><br><span class="line">      handler(pushParam);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    logger.error(<span class="string">&quot;pushServiceThreadExecutor error, exception&#123;&#125;:&quot;</span>, e);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>还有就是我的系统中用了很多生产者与消费者模式，会用多个线程去消费队列的消息，来提高并发度</p>
+<h2 id="线程安全"><a href="#线程安全" class="headerlink" title="线程安全"></a>线程安全</h2><p>在我的理解下，在Java世界里边，所谓线程安全就是多个线程去执行某类，这个类始终能表现出正确的行为，那么这个类就是线程安全的。</p>
+<p>比如我有一个count变量，在service方法不断的累加这个count变量。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UnsafeCountingServlet</span> <span class="keyword">extends</span> <span class="title class_">GenericServlet</span> <span class="keyword">implements</span> <span class="title class_">Servlet</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">long</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">long</span> <span class="title function_">getCount</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> count;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">service</span><span class="params">(ServletRequest servletRequest, ServletResponse servletResponse)</span> <span class="keyword">throws</span> ServletException, IOException &#123;</span><br><span class="line"></span><br><span class="line">        ++count;</span><br><span class="line">        <span class="comment">// To something else...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>假设相同的条件下，count变量每次执行的结果都是相同，那我们就可以说是线程安全的。显然上面的代码肯定不是线程安全的。</p>
+<h2 id="怎么解决线程安全问题"><a href="#怎么解决线程安全问题" class="headerlink" title="怎么解决线程安全问题"></a>怎么解决线程安全问题</h2><p>思路有以下:</p>
+<ul>
+<li><p>能不能保证操作的原子性，考虑 <code>atomic</code>包下的类够不够我们使用。</p>
+</li>
+<li><p>能不能保证操作的可见性，考虑 <code>volatile</code> 关键字 够不够我们使用</p>
+</li>
+<li><p>如果涉及到对线程的控制（比如一次能使用多少个线程，当前线程触发的条件是否依赖其他线程的结果），考虑 <code>CountDownLatch/Semaphore</code> 等等。</p>
+</li>
+<li><p>如果是集合，考虑 <code>java.util.concurrent</code> 包下的集合类。</p>
+</li>
+<li><p>如果 <code>synchronized</code> 无法满足，考虑 <code>lock</code> 包下的类</p>
+<img src="https://mmbiz.qpic.cn/mmbiz_jpg/E44aHibktsKagba0yianrh96EZzIsUNQMmAvr0zxV3B7rPDpjdo1YyURec7Ew7uCFXP8tibBocyCiaM8qewFWFPttQ/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片" style="zoom:67%;" /></li>
+</ul>
+<p>总的来说，就是先判断有没有线程安全问题，如果存在则根据具体的情况去判断使用什么方式去处理线程安全的问题。虽然 <code>synchronized</code> 很有效果，但无脑使用是会影响我们程序的性能的。</p>
+<h2 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h2><p>造成死锁的原因可以简单概括为：当前线程拥有其他线程需要的资源，当前线程等待其他线程已拥有的资源，但是都不放弃自己拥有的资源。</p>
+<p>避免死锁的方式一般有以下方案：</p>
+<ol>
+<li>固定加锁的顺序，比如我们可以使用Hash值的大小来确定加锁的先后</li>
+<li>尽可能缩减加锁的范围，等到操作共享变量的时候才加锁。</li>
+<li>使用可释放的定时锁（一段时间申请不到锁的权限了，直接释放掉）</li>
+</ol>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_jpg/E44aHibktsKagba0yianrh96EZzIsUNQMmHN9Lxuy8nDgFqcGN4RQTU7PGN7enia7ayTJ8MTEtZJSzqckS3x5kYHg/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    <div id="toc-footer" style="display: none"> 
+      <div id="toc-footer2" >
+        
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">1.</span> <span class="toc-text">进程和线程的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8%E5%A4%9A%E7%BA%BF%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">为什么要使用多线程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%99%85%E5%BC%80%E5%8F%91%E4%B8%AD%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">3.</span> <span class="toc-text">实际开发中多线程的使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="toc-number">4.</span> <span class="toc-text">线程安全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%8E%E4%B9%88%E8%A7%A3%E5%86%B3%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98"><span class="toc-number">5.</span> <span class="toc-text">怎么解决线程安全问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%BB%E9%94%81"><span class="toc-number">6.</span> <span class="toc-text">死锁</span></a></li></ol>
+        
+      </div>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&text=多线程基础"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&title=多线程基础"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&is_video=false&description=多线程基础"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=多线程基础&body=Check out this article: http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&title=多线程基础"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&title=多线程基础"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&title=多线程基础"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&title=多线程基础"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&name=多线程基础&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2022/05/31/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E7%A1%80/&t=多线程基础"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        <!-- 网站运行时间 -->
+        <span id="timeDate">载入天数...</span><span id="times">载入时分秒...</span>
+        <script>
+            var now = new Date(); 
+            function createtime() { 
+                var grt= new Date("05/06/2022 22:38:00");//建站时间 格式：月/日/年 时:分:秒
+                now.setTime(now.getTime()+250); 
+                days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+                hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+                if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+                mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+                seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+                snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+                document.getElementById("timeDate").innerHTML = "has been running for "+dnum+" d "; 
+                document.getElementById("times").innerHTML = hnum + " h " + mnum + " m " + snum + " s"; 
+            } 
+        setInterval("createtime()",250);
+        </script>
+
+        <!-- 导航栏 -->
+        <ul>
+          Copyright &copy;
+          
+          
+          2022
+          Soulchay
+        </ul>
+       
+      </div>
+      
+      <div class="footer-right">
+
+        <nav>
+          <!-- 导航栏 -->
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+
+          <!-- 不蒜子统计访问量 -->
+          <ul>
+                   
+              <span class="site-pv">
+                <i class="fa fa-eye"></i> 
+                  <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span class="site-uv">
+                <i class="fa fa-user"></i> 
+                  <span class="busuanzi-user" id="busuanzi_value_site_uv"></span>
+              </span>
+              
+            <script async src="/lib/busuanzi/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+
+
+</footer>
+
+    
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?5322d3f5365b142e868c4e1fd7131329";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'SoulChay/SoulChay.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'icy-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"left","width":140,"height":280},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
