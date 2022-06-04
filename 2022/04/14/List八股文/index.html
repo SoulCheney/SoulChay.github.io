@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="写在前面文章为本人参考《对线面试官》 List集合，方便查阅记忆整理出来的。 讲一讲 List①：List在Java里边是一个接口，常见的实现类有 ArrayList 和 LinkedList，在开发中用得最多的是ArrayList ②：ArrayList的底层数据结构是数组，LinkedList底层数据结构是链表。 ArrayList 和 Array①：原生的数组会有一个特点：你在使用的时候必须">
+<meta property="og:type" content="article">
+<meta property="og:title" content="List八股文">
+<meta property="og:url" content="http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/index.html">
+<meta property="og:site_name" content="22Cheney.">
+<meta property="og:description" content="写在前面文章为本人参考《对线面试官》 List集合，方便查阅记忆整理出来的。 讲一讲 List①：List在Java里边是一个接口，常见的实现类有 ArrayList 和 LinkedList，在开发中用得最多的是ArrayList ②：ArrayList的底层数据结构是数组，LinkedList底层数据结构是链表。 ArrayList 和 Array①：原生的数组会有一个特点：你在使用的时候必须">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603100137.png">
+<meta property="article:published_time" content="2022-04-13T20:29:13.000Z">
+<meta property="article:modified_time" content="2022-06-03T02:04:13.509Z">
+<meta property="article:author" content="Soulchay">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="八股文">
+<meta property="article:tag" content="容器">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603100137.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>List八股文</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="22Cheney." type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2022/03/22/Rpc%E5%B7%A9%E5%9B%BA/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&text=List八股文"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&title=List八股文"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&is_video=false&description=List八股文"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=List八股文&body=Check out this article: http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&title=List八股文"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&title=List八股文"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&title=List八股文"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&title=List八股文"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&name=List八股文&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&t=List八股文"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    
+    <div id="toc" >
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%B2%E4%B8%80%E8%AE%B2-List"><span class="toc-number">2.</span> <span class="toc-text">讲一讲 List</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ArrayList-%E5%92%8C-Array"><span class="toc-number">3.</span> <span class="toc-text">ArrayList 和 Array</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ArrayList-%E7%9A%84%E6%89%A9%E5%AE%B9"><span class="toc-number">4.</span> <span class="toc-text">ArrayList 的扩容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E4%B8%AD%E7%94%A8%E5%BE%97%E6%9C%80%E5%A4%9A%E7%9A%84%E6%98%AFArrayList"><span class="toc-number">5.</span> <span class="toc-text">为什么日常开发中用得最多的是ArrayList</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%B4%E4%B8%80%E8%AF%B4Vector"><span class="toc-number">6.</span> <span class="toc-text">说一说Vector</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#copy-on-write-%E6%9C%BA%E5%88%B6"><span class="toc-number">7.</span> <span class="toc-text">copy-on-write 机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84-List"><span class="toc-number">8.</span> <span class="toc-text">线程安全的 List</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CopyOnWriteArrayList-%E7%BC%BA%E7%82%B9%E5%90%97"><span class="toc-number">9.</span> <span class="toc-text">CopyOnWriteArrayList 缺点吗</span></a></li></ol>
+      
+    </div>
+  </span>
+
+  
+
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        List八股文
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Soulchay</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-04-13T20:29:13.000Z" itemprop="datePublished">2022-04-14</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Java/" rel="tag">Java</a>, <a class="tag-link-link" href="/tags/%E5%85%AB%E8%82%A1%E6%96%87/" rel="tag">八股文</a>, <a class="tag-link-link" href="/tags/%E5%AE%B9%E5%99%A8/" rel="tag">容器</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>文章为本人参考<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU4NzA3MTc5Mg==&mid=2247485417&idx=1&sn=eece302f9a581139a3ad3befc61773c0&scene=21#wechat_redirect">《对线面试官》 List集合</a>，方便查阅记忆整理出来的。</p>
+<h2 id="讲一讲-List"><a href="#讲一讲-List" class="headerlink" title="讲一讲 List"></a>讲一讲 List</h2><p>①：List在Java里边是一个接口，常见的实现类有 ArrayList 和 LinkedList，在开发中用得最多的是ArrayList</p>
+<p>②：ArrayList的底层数据结构是数组，LinkedList底层数据结构是链表。</p>
+<h2 id="ArrayList-和-Array"><a href="#ArrayList-和-Array" class="headerlink" title="ArrayList 和 Array"></a>ArrayList 和 Array</h2><p>①：原生的数组会有一个特点：你在使用的时候必须要为它创建大小，而ArrayList不用。</p>
+<p>②：在日常开发的时候，往往我们是不知道数组的大小的。如果数组的大小指定多了，内存浪费；如果数组大小指定少了，装不下。假设我们给定数组的大小是10，要往这个数组里边填充元素，我们只能添加10个元素。</p>
+<p>③：而ArrayList实现了动态扩容，我们在使用ArrayList的时候可以往里边添加20个，30个，甚至更多的元素</p>
+<p>④：当我们 <code>new ArrayList()</code> 的时候，默认会有一个空的Object数组，大小为0。当我们第一次add添加数据的时候，会给这个数组初始化一个大小，这个大小默认值为10使用ArrayList在每一次add的时候，它都会先去计算这个数组够不够空间。如果空间是够的，那直接追加上去就好了。如果不够，那就得扩容</p>
+<h2 id="ArrayList-的扩容"><a href="#ArrayList-的扩容" class="headerlink" title="ArrayList 的扩容"></a>ArrayList 的扩容</h2><p>在源码里边，有个grow方法，每一次扩原来的1.5倍。比如说，初始化的值是10。现在我第11个元素要进来了，发现这个数组的空间不够了，所以会扩到15。空间扩完容之后，会调用 <code>arraycopy()</code> 来对数组进行拷贝</p>
+<h2 id="为什么日常开发中用得最多的是ArrayList"><a href="#为什么日常开发中用得最多的是ArrayList" class="headerlink" title="为什么日常开发中用得最多的是ArrayList"></a>为什么日常开发中用得最多的是ArrayList</h2><p>①：是由底层的数据结构来决定的，在日常开发中，遍历的需求比增删要多，即便是增删也是往往在List的尾部添加就OK了。像在尾部添加元素，ArrayList的时间复杂度也就O(1)</p>
+<p>②：另外的是，ArrayList的增删底层调用的copyOf()被优化过，现代CPU对内存可以块操作，ArrayList 的增删一点儿也不会比 LinkedList慢</p>
+<h2 id="说一说Vector"><a href="#说一说Vector" class="headerlink" title="说一说Vector"></a>说一说Vector</h2><p>①：Vector 底层结构是数组，一般现在我们已经很少用了。</p>
+<p>②：相对于ArrayList，它是线程安全的，在扩容的时候它是直接扩容两倍的。比如现在有10个元素，要扩容的时候，就会将数组的大小增长到20</p>
+<h2 id="copy-on-write-机制"><a href="#copy-on-write-机制" class="headerlink" title="copy-on-write 机制"></a>copy-on-write 机制</h2><p>①：在Linux中，我们知道所有的进程都是 init 进程 fork 出来的，除了进程号之外，fork出来的进程，默认跟父进程一模一样的。</p>
+<p>②：当使用了cow机制，子进程在被fork之后exec之前，两个进程用的是相同的内存空间的，这意味着子进程的代码段、数据段、堆栈都是指向父进程的物理空间，当父子进程中有更改的行为发生时，再为子进程分配相应物理空间。这样做的好处就是，等到真正发生修改的时候，才去分配资源，可以减少分配或者复制大量资源时带来的瞬间延时。</p>
+<p>③：简单来说，就可以理解为我们的懒加载，或者说单例模式的懒汉式。等真正用到的时候再分配</p>
+<p>④：在文件系统中，其实也有cow的机制。文件系统的cow就是在修改数据的时候，不会直接在原来的数据位置上进行操作，而是重新找个位置修改。比如说：要修改数据块A的内容，先把A读出来，写到B块里面去。如果这时候断电了，原来A的内容还在。这样做的好处就是可以保证数据的完整性，瞬间挂掉了容易恢复。</p>
+<h2 id="线程安全的-List"><a href="#线程安全的-List" class="headerlink" title="线程安全的 List"></a>线程安全的 List</h2><p>①：首先，我们也可以用Collections来将ArrayList来包装一下，变成线程安全。</p>
+<p>②：在 <code>java.util.concurrent</code> 包下还有一个类，叫做 CopyOnWriteArrayList</p>
+<p>③：CopyOnWriteArrayList 是一个线程安全的List，底层是通过复制数组的方式来实现的。我来说说它的 <code>add()</code> 方法的实现吧，在 <code>add()</code> 方法其实他会加 lock锁，然后会复制出一个新的数组，往新的数组里边add真正的元素，最后把 array 的指向改变为新的数组。<code>get()</code> 方法又或是 <code>size()</code> 方法只是获取 array 所指向的数组的元素或者大小。读不加锁，写加锁</p>
+<p>④：可以发现的是，CopyOnWriteArrayList 跟文件系统的COW机制是很像的</p>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603100137.png"/>
+
+<h2 id="CopyOnWriteArrayList-缺点吗"><a href="#CopyOnWriteArrayList-缺点吗" class="headerlink" title="CopyOnWriteArrayList 缺点吗"></a>CopyOnWriteArrayList 缺点吗</h2><p>①：很显然，CopyOnWriteArrayList 是很耗费内存的，每次 <code>set()/add()</code> 都会复制一个数组出来</p>
+<p>②：另外就是CopyOnWriteArrayList只能保证数据的最终一致性，不能保证数据的实时一致性。假设两个线程，线程A去读取CopyOnWriteArrayList的数据，还没读完，现在线程B把这个List给清空了，线程A此时还是可以把剩余的数据给读出来。</p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    <div id="toc-footer" style="display: none"> 
+      <div id="toc-footer2" >
+        
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%B2%E4%B8%80%E8%AE%B2-List"><span class="toc-number">2.</span> <span class="toc-text">讲一讲 List</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ArrayList-%E5%92%8C-Array"><span class="toc-number">3.</span> <span class="toc-text">ArrayList 和 Array</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ArrayList-%E7%9A%84%E6%89%A9%E5%AE%B9"><span class="toc-number">4.</span> <span class="toc-text">ArrayList 的扩容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E4%B8%AD%E7%94%A8%E5%BE%97%E6%9C%80%E5%A4%9A%E7%9A%84%E6%98%AFArrayList"><span class="toc-number">5.</span> <span class="toc-text">为什么日常开发中用得最多的是ArrayList</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%B4%E4%B8%80%E8%AF%B4Vector"><span class="toc-number">6.</span> <span class="toc-text">说一说Vector</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#copy-on-write-%E6%9C%BA%E5%88%B6"><span class="toc-number">7.</span> <span class="toc-text">copy-on-write 机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84-List"><span class="toc-number">8.</span> <span class="toc-text">线程安全的 List</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CopyOnWriteArrayList-%E7%BC%BA%E7%82%B9%E5%90%97"><span class="toc-number">9.</span> <span class="toc-text">CopyOnWriteArrayList 缺点吗</span></a></li></ol>
+        
+      </div>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&text=List八股文"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&title=List八股文"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&is_video=false&description=List八股文"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=List八股文&body=Check out this article: http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&title=List八股文"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&title=List八股文"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&title=List八股文"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&title=List八股文"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&name=List八股文&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/&t=List八股文"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        <!-- 网站运行时间 -->
+        <span id="timeDate">载入天数...</span><span id="times">载入时分秒...</span>
+        <script>
+            var now = new Date(); 
+            function createtime() { 
+                var grt= new Date("05/06/2022 22:38:00");//建站时间 格式：月/日/年 时:分:秒
+                now.setTime(now.getTime()+250); 
+                days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+                hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+                if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+                mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+                seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+                snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+                document.getElementById("timeDate").innerHTML = "has been running for "+dnum+" d "; 
+                document.getElementById("times").innerHTML = hnum + " h " + mnum + " m " + snum + " s"; 
+            } 
+        setInterval("createtime()",250);
+        </script>
+
+        <!-- 导航栏 -->
+        <ul>
+          Copyright &copy;
+          
+          
+          2022
+          Soulchay
+        </ul>
+       
+      </div>
+      
+      <div class="footer-right">
+
+        <nav>
+          <!-- 导航栏 -->
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+
+          <!-- 不蒜子统计访问量 -->
+          <ul>
+                   
+              <span class="site-pv">
+                <i class="fa fa-eye"></i> 
+                  <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span class="site-uv">
+                <i class="fa fa-user"></i> 
+                  <span class="busuanzi-user" id="busuanzi_value_site_uv"></span>
+              </span>
+              
+            <script async src="/lib/busuanzi/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+
+
+</footer>
+
+    
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?5322d3f5365b142e868c4e1fd7131329";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'SoulChay/SoulChay.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'icy-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"left","width":140,"height":280},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

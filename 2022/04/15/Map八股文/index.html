@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="写在前面文章为本人参考《对线面试官》 Map集合，方便查阅记忆整理出来的。 讲一讲Map（Jdk8）Map在Java里边是一个接口，常见的实现类有 HashMap、LinkedHashMap、TreeMap 和 ConcurrentHashMap。哈希表的结构是 数组 + 链表 的方式。  HashMap 底层数据结构是数组+链表&#x2F;红黑树。 LinkedHashMap 底层数据结构是数组">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Map八股文">
+<meta property="og:url" content="http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/index.html">
+<meta property="og:site_name" content="22Cheney.">
+<meta property="og:description" content="写在前面文章为本人参考《对线面试官》 Map集合，方便查阅记忆整理出来的。 讲一讲Map（Jdk8）Map在Java里边是一个接口，常见的实现类有 HashMap、LinkedHashMap、TreeMap 和 ConcurrentHashMap。哈希表的结构是 数组 + 链表 的方式。  HashMap 底层数据结构是数组+链表&#x2F;红黑树。 LinkedHashMap 底层数据结构是数组">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603100753.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603100933.png">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/E44aHibktsKaOQSs0icAVN0a9uQZeSYzKSmpLk56ibGp8M2prj0iaTXbx0Mn83ic5t5pdEHBD8GKe6f3icGevgnMn81Q/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603110421.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603110446.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603110518.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603110550.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603110625.png">
+<meta property="og:image" content="c:/Users/18375/AppData/Roaming/Typora/typora-user-images/image-20220603112210655.png">
+<meta property="og:image" content="c:/Users/18375/AppData/Roaming/Typora/typora-user-images/image-20220603112238976.png">
+<meta property="og:image" content="c:/Users/18375/AppData/Roaming/Typora/typora-user-images/image-20220603112246489.png">
+<meta property="og:image" content="c:/Users/18375/AppData/Roaming/Typora/typora-user-images/image-20220603112254987.png">
+<meta property="article:published_time" content="2022-04-15T06:51:27.000Z">
+<meta property="article:modified_time" content="2022-06-03T13:56:50.600Z">
+<meta property="article:author" content="Soulchay">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="八股文">
+<meta property="article:tag" content="容器">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603100753.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Map八股文</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="22Cheney." type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2022/04/30/CMS&G1-%E5%85%AB%E8%82%A1%E6%96%87/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2022/04/14/List%E5%85%AB%E8%82%A1%E6%96%87/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&text=Map八股文"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&title=Map八股文"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&is_video=false&description=Map八股文"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Map八股文&body=Check out this article: http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&title=Map八股文"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&title=Map八股文"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&title=Map八股文"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&title=Map八股文"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&name=Map八股文&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&t=Map八股文"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    
+    <div id="toc" >
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%B2%E4%B8%80%E8%AE%B2Map%EF%BC%88Jdk8%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">讲一讲Map（Jdk8）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAHashMap%E6%97%B6%E4%BC%9A%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88"><span class="toc-number">3.</span> <span class="toc-text">创建HashMap时会发生什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#put%E5%85%83%E7%B4%A0%E7%9A%84%E6%97%B6%E5%80%99%EF%BC%8C%E4%BC%A0%E9%80%92%E7%9A%84Key%E5%A6%82%E4%BD%95%E8%AE%A1%E7%AE%97%E5%93%88%E5%B8%8C%E5%80%BC"><span class="toc-number">4.</span> <span class="toc-text">put元素的时候，传递的Key如何计算哈希值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#put-%E5%92%8C-get-%E6%96%B9%E6%B3%95%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">5.</span> <span class="toc-text">put() 和 get() 方法的实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap%E6%80%8E%E4%B9%88%E5%88%A4%E6%96%AD%E4%B8%80%E4%B8%AA%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E7%9B%B8%E5%90%8C"><span class="toc-number">6.</span> <span class="toc-text">HashMap怎么判断一个元素是否相同</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap-%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E4%B8%8B%E7%94%A8%E5%88%B0%E7%BA%A2%E9%BB%91%E6%A0%91"><span class="toc-number">7.</span> <span class="toc-text">HashMap 什么情况下用到红黑树</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E4%B8%AD-LinkedHashMap-%E7%94%A8%E7%9A%84%E5%A4%9A%E5%90%97"><span class="toc-number">8.</span> <span class="toc-text">日常开发中 LinkedHashMap 用的多吗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E4%B8%AD-TreeMap-%E7%94%A8%E7%9A%84%E5%A4%9A%E5%90%97"><span class="toc-number">9.</span> <span class="toc-text">日常开发中 TreeMap 用的多吗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84Map"><span class="toc-number">10.</span> <span class="toc-text">线程安全的Map</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JDK-7-%E5%92%8CJDK8%E4%B8%ADHashMap%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">11.</span> <span class="toc-text">JDK 7 和JDK8中HashMap的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JDK-7-%E5%92%8CJDK8%E4%B8%AD-ConcurrentHashMap-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">12.</span> <span class="toc-text">JDK 7 和JDK8中 ConcurrentHashMap 的区别</span></a></li></ol>
+      
+    </div>
+  </span>
+
+  
+
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Map八股文
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Soulchay</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-04-15T06:51:27.000Z" itemprop="datePublished">2022-04-15</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Java/" rel="tag">Java</a>, <a class="tag-link-link" href="/tags/%E5%85%AB%E8%82%A1%E6%96%87/" rel="tag">八股文</a>, <a class="tag-link-link" href="/tags/%E5%AE%B9%E5%99%A8/" rel="tag">容器</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>文章为本人参考<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU4NzA3MTc5Mg==&mid=2247485434&idx=1&sn=00e572dac41f3bbbdca68c0f5d1c77b1&scene=21#wechat_redirect">《对线面试官》 Map集合</a>，方便查阅记忆整理出来的。</p>
+<h2 id="讲一讲Map（Jdk8）"><a href="#讲一讲Map（Jdk8）" class="headerlink" title="讲一讲Map（Jdk8）"></a>讲一讲Map（Jdk8）</h2><p>Map在Java里边是一个接口，常见的实现类有 HashMap、LinkedHashMap、TreeMap 和 ConcurrentHashMap。哈希表的结构是 数组 + 链表 的方式。</p>
+<ul>
+<li>HashMap 底层数据结构是数组+链表&#x2F;红黑树。</li>
+<li>LinkedHashMap 底层数据结构是数组+链表&#x2F;红黑树+双向链表。</li>
+<li>TreeMap 底层数据结构是红黑树。</li>
+<li>而 ConcurrentHashMap 底层数据结构也是数组+链表&#x2F;红黑树</li>
+</ul>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603100753.png"/>
+
+<h2 id="创建HashMap时会发生什么"><a href="#创建HashMap时会发生什么" class="headerlink" title="创建HashMap时会发生什么"></a>创建HashMap时会发生什么</h2><p>①：HashMap有几个构造方法，但最主要的就是指定初始值大小和负载因子的大小。如果我们不指定，默认HashMap的大小为16，负载因子的大小为0.75。</p>
+<p>②：HashMap的大小只能是2次幂的，假设你传一个10进去，实际上最终HashMap的大小是16，你传一个7进去，HashMap最终的大小是8，具体的实现在tableSizeFor可以看到。</p>
+<p>③：我们把元素放进HashMap的时候，需要算出这个元素所在的位置（hash）。在HashMap里用的是位运算来代替取模，能够更加高效地算出该元素所在的位置。为什么HashMap的大小只能是2次幂，因为只有大小为2次幂时，才能合理用位运算替代取模。而负载因子的大小决定着哈希表的扩容和哈希冲突。比如现在我默认的HashMap大小为16，负载因子为0.75，这意味着数组最多只能放12个元素，一旦超过12个元素，则哈希表需要扩容。怎么算出是12呢？很简单，就是16*0.75。每次put元素进去的时候，都会检查HashMap的大小有没有超过这个阈值，如果有，则需要扩容。</p>
+<p>④：鉴于上面的说法（HashMap的大小只能是2次幂），所以扩容的时候时候默认是扩原来的2倍。扩容这个操作肯定是耗时的，那能不能把负载因子调高一点，比如我要调至为1，那我的HashMap就等到16个元素的时候才扩容呢。是可以的，但是不推荐。负载因子调高了，这意味着哈希冲突的概率会增高，哈希冲突概率增高，同样会耗时（因为查找的速度变慢了）。</p>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603100933.png"/>
+
+<h2 id="put元素的时候，传递的Key如何计算哈希值"><a href="#put元素的时候，传递的Key如何计算哈希值" class="headerlink" title="put元素的时候，传递的Key如何计算哈希值"></a>put元素的时候，传递的Key如何计算哈希值</h2><p>实现就在hash方法上，可以发现的是，它是先算出正常的哈希值，然后与高16位做异或运算，产生最终的哈希值。这样做的好处可以增加了随机性，减少了碰撞冲突的可能性。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_jpg/E44aHibktsKaOQSs0icAVN0a9uQZeSYzKSmpLk56ibGp8M2prj0iaTXbx0Mn83ic5t5pdEHBD8GKe6f3icGevgnMn81Q/640?wx_fmt=jpeg&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603110421.png"/>
+
+<h2 id="put-和-get-方法的实现"><a href="#put-和-get-方法的实现" class="headerlink" title="put() 和 get() 方法的实现"></a>put() 和 get() 方法的实现</h2><p>①：在 put() 的时候，首先对 key 做 hash运算，计算出该 key 所在的 index。</p>
+<p>②：如果没碰撞，直接放到数组中，如果碰撞了，需要判断目前数据结构是链表还是红黑树，根据不同的情况来进行插入。假设key是相同的，则替换到原来的值。最后判断哈希表是否满了(当前哈希表大小*负载因子），如果满了，则扩容。</p>
+<p>③：在 get() 的时候，还是对 key 做 hash运算，计算出该key所在的index，然后判断是否有 hash冲突。假设没有冲突直接返回，假设有冲突则判断当前数据结构是链表还是红黑树，分别从不同的数据结构中取出。</p>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603110446.png" style="zoom:67%;" />
+
+<h2 id="HashMap怎么判断一个元素是否相同"><a href="#HashMap怎么判断一个元素是否相同" class="headerlink" title="HashMap怎么判断一个元素是否相同"></a>HashMap怎么判断一个元素是否相同</h2><p>首先会比较hash值，随后会用 &#x3D;&#x3D;运算符 和 equals() 来判断该元素是否相同。说白了就是：如果只有hash值相同，那说明该元素哈希冲突了，如果 hash值和 equals() 都相同，那说明该元素是同一个。</p>
+<h2 id="HashMap-什么情况下用到红黑树"><a href="#HashMap-什么情况下用到红黑树" class="headerlink" title="HashMap 什么情况下用到红黑树"></a>HashMap 什么情况下用到红黑树</h2><p>当数组的大小大于64 且 链表的大小大于8 的时候才会将链表改为红黑树，当红黑树大小为6时，会退化为链表。这里转红黑树退化为链表的操作主要出于查询和插入时对性能的考量。链表查询时间复杂度O(N)，插入时间复杂度O(1)，红黑树查询和插入时间复杂度O(logN)</p>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603110518.png"/>
+
+<h2 id="日常开发中-LinkedHashMap-用的多吗"><a href="#日常开发中-LinkedHashMap-用的多吗" class="headerlink" title="日常开发中 LinkedHashMap 用的多吗"></a>日常开发中 LinkedHashMap 用的多吗</h2><p>①：其实在日常开发中 LinkedHashMap 用得不多。</p>
+<p>②：在前面也提到了，LinkedHashMap底层结构是数组+链表+双向链表，实际上它继承了HashMap，在HashMap的基础上维护了一个双向链表。有了这个双向链表，我们的插入可以是有序的，这里的有序不是指大小有序，而是插入有序。</p>
+<p>③：LinkedHashMap 在遍历的时候实际用的是双向链表来遍历的，所以 LinkedHashMap 的大小不会影响到遍历的性能</p>
+<h2 id="日常开发中-TreeMap-用的多吗"><a href="#日常开发中-TreeMap-用的多吗" class="headerlink" title="日常开发中 TreeMap 用的多吗"></a>日常开发中 TreeMap 用的多吗</h2><p>①：TreeMap 在现实开发中用得也不多，TreeMap的底层数据结构是红黑树。</p>
+<p>②：TreeMap 的 key不能为 null（如果为null，那还怎么排序呢），TreeMap有序是通过 Comparator 来进行比较的，如果 comparator为null，那么就使用自然顺序</p>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603110550.png"/>
+
+<h2 id="线程安全的Map"><a href="#线程安全的Map" class="headerlink" title="线程安全的Map"></a>线程安全的Map</h2><p>①：HashMap不是线程安全的，在多线程环境下，HashMap有可能会有数据丢失和获取不了最新数据的问题，比如说：线程Aput进去了，线程Bget不出来。</p>
+<p>②：我们想要线程安全，可以使用ConcurrentHashMap。ConcurrentHashMap是线程安全的Map实现类，它在juc包下的。</p>
+<p>③：线程安全的Map实现类除了ConcurrentHashMap还有一个叫做Hashtable。</p>
+<p>④：当然了，也可以使用Collections来包装出一个线程安全的Map。但无论是Hashtable还是Collections包装出来的都比较低效（因为是直接在外层套synchronize），所以我们一般有线程安全问题考量的，都使用ConcurrentHashMap</p>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220603110625.png"/>
+
+<p>⑤：ConcurrentHashMap 的底层数据结构是 数组+链表&#x2F;红黑树，它能支持高并发的访问和更新，是线程安全的。ConcurrentHashMap 通过在部分加锁 和 利用CAS算法来实现同步，在get的时候没有加锁，Node用了 volatile 给修饰。在扩容时，会给每个线程分配对应的区间，并且为了防止putVal导致数据不一致，会给线程的所负责的区间加锁</p>
+<h2 id="JDK-7-和JDK8中HashMap的区别"><a href="#JDK-7-和JDK8中HashMap的区别" class="headerlink" title="JDK 7 和JDK8中HashMap的区别"></a>JDK 7 和JDK8中HashMap的区别</h2><p><img src="C:\Users\18375\AppData\Roaming\Typora\typora-user-images\image-20220603112210655.png" alt="image-20220603112210655"></p>
+<h2 id="JDK-7-和JDK8中-ConcurrentHashMap-的区别"><a href="#JDK-7-和JDK8中-ConcurrentHashMap-的区别" class="headerlink" title="JDK 7 和JDK8中 ConcurrentHashMap 的区别"></a>JDK 7 和JDK8中 ConcurrentHashMap 的区别</h2><p><img src="C:\Users\18375\AppData\Roaming\Typora\typora-user-images\image-20220603112238976.png" alt="image-20220603112238976"></p>
+<p><img src="C:\Users\18375\AppData\Roaming\Typora\typora-user-images\image-20220603112246489.png" alt="image-20220603112246489"></p>
+<p><img src="C:\Users\18375\AppData\Roaming\Typora\typora-user-images\image-20220603112254987.png" alt="image-20220603112254987"></p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    <div id="toc-footer" style="display: none"> 
+      <div id="toc-footer2" >
+        
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%B2%E4%B8%80%E8%AE%B2Map%EF%BC%88Jdk8%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">讲一讲Map（Jdk8）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAHashMap%E6%97%B6%E4%BC%9A%E5%8F%91%E7%94%9F%E4%BB%80%E4%B9%88"><span class="toc-number">3.</span> <span class="toc-text">创建HashMap时会发生什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#put%E5%85%83%E7%B4%A0%E7%9A%84%E6%97%B6%E5%80%99%EF%BC%8C%E4%BC%A0%E9%80%92%E7%9A%84Key%E5%A6%82%E4%BD%95%E8%AE%A1%E7%AE%97%E5%93%88%E5%B8%8C%E5%80%BC"><span class="toc-number">4.</span> <span class="toc-text">put元素的时候，传递的Key如何计算哈希值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#put-%E5%92%8C-get-%E6%96%B9%E6%B3%95%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">5.</span> <span class="toc-text">put() 和 get() 方法的实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap%E6%80%8E%E4%B9%88%E5%88%A4%E6%96%AD%E4%B8%80%E4%B8%AA%E5%85%83%E7%B4%A0%E6%98%AF%E5%90%A6%E7%9B%B8%E5%90%8C"><span class="toc-number">6.</span> <span class="toc-text">HashMap怎么判断一个元素是否相同</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap-%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E4%B8%8B%E7%94%A8%E5%88%B0%E7%BA%A2%E9%BB%91%E6%A0%91"><span class="toc-number">7.</span> <span class="toc-text">HashMap 什么情况下用到红黑树</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E4%B8%AD-LinkedHashMap-%E7%94%A8%E7%9A%84%E5%A4%9A%E5%90%97"><span class="toc-number">8.</span> <span class="toc-text">日常开发中 LinkedHashMap 用的多吗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A5%E5%B8%B8%E5%BC%80%E5%8F%91%E4%B8%AD-TreeMap-%E7%94%A8%E7%9A%84%E5%A4%9A%E5%90%97"><span class="toc-number">9.</span> <span class="toc-text">日常开发中 TreeMap 用的多吗</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84Map"><span class="toc-number">10.</span> <span class="toc-text">线程安全的Map</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JDK-7-%E5%92%8CJDK8%E4%B8%ADHashMap%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">11.</span> <span class="toc-text">JDK 7 和JDK8中HashMap的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#JDK-7-%E5%92%8CJDK8%E4%B8%AD-ConcurrentHashMap-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">12.</span> <span class="toc-text">JDK 7 和JDK8中 ConcurrentHashMap 的区别</span></a></li></ol>
+        
+      </div>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&text=Map八股文"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&title=Map八股文"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&is_video=false&description=Map八股文"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Map八股文&body=Check out this article: http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&title=Map八股文"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&title=Map八股文"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&title=Map八股文"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&title=Map八股文"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&name=Map八股文&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2022/04/15/Map%E5%85%AB%E8%82%A1%E6%96%87/&t=Map八股文"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        <!-- 网站运行时间 -->
+        <span id="timeDate">载入天数...</span><span id="times">载入时分秒...</span>
+        <script>
+            var now = new Date(); 
+            function createtime() { 
+                var grt= new Date("05/06/2022 22:38:00");//建站时间 格式：月/日/年 时:分:秒
+                now.setTime(now.getTime()+250); 
+                days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+                hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+                if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+                mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+                seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+                snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+                document.getElementById("timeDate").innerHTML = "has been running for "+dnum+" d "; 
+                document.getElementById("times").innerHTML = hnum + " h " + mnum + " m " + snum + " s"; 
+            } 
+        setInterval("createtime()",250);
+        </script>
+
+        <!-- 导航栏 -->
+        <ul>
+          Copyright &copy;
+          
+          
+          2022
+          Soulchay
+        </ul>
+       
+      </div>
+      
+      <div class="footer-right">
+
+        <nav>
+          <!-- 导航栏 -->
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+
+          <!-- 不蒜子统计访问量 -->
+          <ul>
+                   
+              <span class="site-pv">
+                <i class="fa fa-eye"></i> 
+                  <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span class="site-uv">
+                <i class="fa fa-user"></i> 
+                  <span class="busuanzi-user" id="busuanzi_value_site_uv"></span>
+              </span>
+              
+            <script async src="/lib/busuanzi/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+
+
+</footer>
+
+    
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?5322d3f5365b142e868c4e1fd7131329";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'SoulChay/SoulChay.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'icy-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"left","width":140,"height":280},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>

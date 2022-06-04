@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="写在前面文章为本人参考《对线面试官》 Java内存模型，方便查阅记忆整理出来的。 为什么要有Java内存模型 现有计算机往往是多核的，每个核心下会有高速缓存。高速缓存的诞生是由于「CPU与内存(主存)的速度存在差异」，L1和L2缓存一般是「每个核心独占」一份的。 为了让CPU提高运算效率，处理器可能会对输入的代码进行「乱序执行」，也就是所谓的「指令重排序」 一次对数值的修改操作往往是非原子性的（比">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java内存模型">
+<meta property="og:url" content="http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="22Cheney.">
+<meta property="og:description" content="写在前面文章为本人参考《对线面试官》 Java内存模型，方便查阅记忆整理出来的。 为什么要有Java内存模型 现有计算机往往是多核的，每个核心下会有高速缓存。高速缓存的诞生是由于「CPU与内存(主存)的速度存在差异」，L1和L2缓存一般是「每个核心独占」一份的。 为了让CPU提高运算效率，处理器可能会对输入的代码进行「乱序执行」，也就是所谓的「指令重排序」 一次对数值的修改操作往往是非原子性的（比">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093338.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093410.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093419.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093425.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093449.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093458.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093505.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093835.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093905.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093928.png">
+<meta property="og:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093959.png">
+<meta property="article:published_time" content="2022-06-02T00:39:18.000Z">
+<meta property="article:modified_time" content="2022-06-02T01:40:53.723Z">
+<meta property="article:author" content="Soulchay">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="八股文">
+<meta property="article:tag" content="多线程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093338.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Java内存模型</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"><link rel="alternate" href="/atom.xml" title="22Cheney." type="application/atom+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2022/06/01/ThreadLocal%E5%85%AB%E8%82%A1%E6%96%87/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&text=Java内存模型"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&title=Java内存模型"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&is_video=false&description=Java内存模型"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java内存模型&body=Check out this article: http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&title=Java内存模型"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&title=Java内存模型"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&title=Java内存模型"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&title=Java内存模型"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&name=Java内存模型&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&t=Java内存模型"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    
+    <div id="toc" >
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%9C%89Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">为什么要有Java内存模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MESI%E5%8D%8F%E8%AE%AE"><span class="toc-number">2.1.</span> <span class="toc-text">MESI协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E7%BC%93%E5%AD%98%E6%95%B0%E6%8D%AE%E4%B8%8D%E4%B8%80%E8%87%B4"><span class="toc-number">2.2.</span> <span class="toc-text">解决缓存数据不一致</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3CPU%E6%8C%87%E4%BB%A4%E9%87%8D%E6%8E%92%E5%BA%8F%EF%BC%88%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%EF%BC%89"><span class="toc-number">2.3.</span> <span class="toc-text">解决CPU指令重排序（内存屏障）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C"><span class="toc-number">2.4.</span> <span class="toc-text">内存屏障</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">2.5.</span> <span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B"><span class="toc-number">3.</span> <span class="toc-text">Java内存模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%8A%BD%E8%B1%A1%E7%BB%93%E6%9E%84"><span class="toc-number">3.1.</span> <span class="toc-text">Java内存模型的抽象结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#happen-before"><span class="toc-number">3.2.</span> <span class="toc-text">happen-before</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#volatile-%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">3.3.</span> <span class="toc-text">volatile 关键字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#volatile-%E7%9A%84%E5%8F%AF%E8%A7%81%E6%80%A7%E5%92%8C%E6%9C%89%E5%BA%8F%E6%80%A7"><span class="toc-number">3.4.</span> <span class="toc-text">volatile 的可见性和有序性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#volatile-%E5%92%8C-MESI%E5%8D%8F%E8%AE%AE%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.5.</span> <span class="toc-text">volatile 和 MESI协议的关系</span></a></li></ol></li></ol>
+      
+    </div>
+  </span>
+
+  
+
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Java内存模型
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Soulchay</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-06-02T00:39:18.000Z" itemprop="datePublished">2022-06-02</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/Java/" rel="tag">Java</a>, <a class="tag-link-link" href="/tags/%E5%85%AB%E8%82%A1%E6%96%87/" rel="tag">八股文</a>, <a class="tag-link-link" href="/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="tag">多线程</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>文章为本人参考<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU4NzA3MTc5Mg==&mid=2247485392&idx=1&sn=b8561840166e147b05fd647acbb4b3fd&scene=21#wechat_redirect">《对线面试官》 Java内存模型</a>，方便查阅记忆整理出来的。</p>
+<h2 id="为什么要有Java内存模型"><a href="#为什么要有Java内存模型" class="headerlink" title="为什么要有Java内存模型"></a>为什么要有Java内存模型</h2><ol>
+<li>现有计算机往往是多核的，每个核心下会有高速缓存。高速缓存的诞生是由于「CPU与内存(主存)的速度存在差异」，L1和L2缓存一般是「每个核心独占」一份的。</li>
+<li>为了让CPU提高运算效率，处理器可能会对输入的代码进行「乱序执行」，也就是所谓的「指令重排序」</li>
+<li>一次对数值的修改操作往往是非原子性的（比如 <code>i++</code> 实际上在计算机执行时就会分成多个指令）</li>
+</ol>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093338.png"/>
+
+<ol start="4">
+<li><p>在单线程环境下，上面所讲的均不会存在什么问题，因为单线程意味着无并发。并且在单线程下，编译器 &#x2F;runtime&#x2F;处理器 都必须遵守as-if-serial 语义，遵守 as-if-serial 意味着它们不会对「数据依赖关系的操作」做重排序。但是CPU为了效率，有了高速缓存、有了指令重排序等等，整块架构都变得复杂了。我们使用起了多线程。多线程在意味着并发，并发就意味着我们需要考虑线程安全问题</p>
+<ol>
+<li><p>缓存数据不一致：多个线程同时修改「共享变量」，CPU核心下的高速缓存是「不共享」的，那多个cache与内存之间的数据同步该怎么做？</p>
+<ol>
+<li><p>使用「总线锁」：某个核心在修改数据的过程中，其他核心均无法修改内存中的数据。（类似于独占内存的概念，只要有CPU在修改，那别的CPU就得等待当前CPU释放）</p>
+</li>
+<li><p>缓存一致性协议（MESI协议，其实协议有很多，只是举个大家都可能见过的）。MESI拆开英文是（Modified （修改状态）、Exclusive （独占状态）、Share（共享状态）、Invalid（无效状态））。缓存一致性协议我认为可以理解为「缓存锁」，它针对的是「缓存行」(Cache line) 进行”加锁”，所谓「缓存行」其实就是 高速缓存 存储的最小单位。</p>
+</li>
+</ol>
+</li>
+<li><p>CPU指令重排序在多线程下会导致代码在非预期下执行，最终会导致结果存在错误的情况。</p>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093410.png"/></li>
+</ol>
+</li>
+</ol>
+<h3 id="MESI协议"><a href="#MESI协议" class="headerlink" title="MESI协议"></a>MESI协议</h3><p>①：当每个CPU读取共享变量之前，会先识别数据的「对象状态」(是修改、还是共享、还是独占、还是无效)。</p>
+<p>②：如果是独占，说明当前CPU将要得到的变量数据是最新的，没有被其他CPU所同时读取</p>
+<p>③：如果是共享，说明当前CPU将要得到的变量数据还是最新的，有其他的CPU在同时读取，但还没被修改</p>
+<p>④：如果是修改，说明当前CPU正在修改该变量的值，同时会向其他CPU发送该数据状态为invalid(无效)的通知，得到其他CPU响应后（其他CPU将数据状态从共享(share)变成invalid(无效)），会当前CPU将高速缓存的数据写到主存，并把自己的状态从modify(修改)变成exclusive(独占)</p>
+<p>⑤：如果是无效，说明当前数据是被改过了，需要从主存重新读取最新的数据。</p>
+<p>⑥：MESI协议做的就是判断「对象状态」，根据「对象状态」做不同的策略。关键就在于某个CPU在对数据进行修改时，需要「同步」通知其他CPU，表示这个数据被我修改了，你们不能用了。</p>
+<p>⑦：比较于「总线锁」，MESI协议的”锁粒度”更小了，性能那肯定会更高</p>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093419.png"/>
+
+<h3 id="解决缓存数据不一致"><a href="#解决缓存数据不一致" class="headerlink" title="解决缓存数据不一致"></a>解决缓存数据不一致</h3><p>①：从前面讲到的，可以发现的是：当CPU修改数据时，需要「同步」告诉其他的CPU，等待其他CPU响应接收到invalid(无效)后，它才能将高速缓存数据写到主存。</p>
+<p>②：同步，意味着等待，等待意味着什么都干不了。CPU肯定不乐意啊，所以又优化了一把。优化思路就是从「同步」变成「异步」。</p>
+<p>③：在修改时会「同步」告诉其他CPU，而现在则把最新修改的值写到「store buffer」中，并通知其他CPU记得要改状态，随后CPU就直接返回干其他事了。等到收到其它CPU发过来的响应消息，再将数据更新到高速缓存中。</p>
+<p>④：其他CPU接收到invalid(无效)通知时，也会把接收到的消息放入「invalid queue」中，只要写到「invalid queue」就会直接返回告诉修改数据的CPU已经将状态置为「invalid」</p>
+<p>⑤：而异步又会带来新问题：那我现在CPU修改完A值，写到「store buffer」了，CPU就可以干其他事了。那如果该CPU又接收指令需要修改A值，但上一次修改的值还在「store buffer」中呢，没修改至高速缓存呢。所以CPU在读取的时候，需要去「store buffer」看看存不存在，存在则直接取，不存在才读主存的数据。【Store Forwarding】</p>
+<p>⑥：好了，解决掉第一个异步带来的问题了。（相同的核心对数据进行读写，由于异步，很可能会导致第二次读取的还是旧值，所以首先读「store buffer」。</p>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093425.png"/>
+
+<h3 id="解决CPU指令重排序（内存屏障）"><a href="#解决CPU指令重排序（内存屏障）" class="headerlink" title="解决CPU指令重排序（内存屏障）"></a>解决CPU指令重排序（内存屏障）</h3><p>①：「异步化」会导致相同核心读写共享变量有问题，也会导致「不同」核心读写共享变量有问题啊</p>
+<p>②：CPU1修改了A值，已把修改后值写到「store buffer」并通知CPU2对该值进行invalid(无效)操作，而CPU2可能还没收到invalid(无效)通知，就去做了其他的操作，导致CPU2读到的还是旧值。即便CPU2收到了invalid(无效)通知，但CPU1的值还没写到主存，那CPU2再次向主存读取的时候，还是旧值…</p>
+<p>③：变量之间很多时候是具有「相关性」(a&#x3D;1;b&#x3D;0;b&#x3D;a)，这对于CPU又是无感知的…</p>
+<p>④：总体而言，由于CPU对「缓存一致性协议」进行的异步优化「store buffer」「invalid queue」，很可能导致后面的指令很可能查不到前面指令的执行结果（各个指令的执行顺序非代码执行顺序），这种现象很多时候被称作「CPU乱序执行」</p>
+<p>⑤：为了解决乱序问题（也可以理解为可见性问题，修改完没有及时同步到其他的CPU），又引出了「内存屏障」的概念。「内存屏障」其实就是为了解决「异步优化」导致「CPU乱序执行」&#x2F;「缓存不及时可见」的问题，那怎么解决的呢？就是把「异步优化」给”禁用“掉</p>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093449.png">
+
+<h3 id="内存屏障"><a href="#内存屏障" class="headerlink" title="内存屏障"></a>内存屏障</h3><p>①：内存屏障可以分为三种类型：写屏障，读屏障以及全能屏障（包含了读写屏障），屏障可以简单理解为：在操作数据的时候，往数据插入一条”特殊的指令”。只要遇到这条指令，那前面的操作都得「完成」。</p>
+<p>②：那写屏障就可以这样理解：CPU当发现写屏障的指令时，会把该指令「之前」存在于「store Buffer」所有写指令刷入高速缓存。</p>
+<p>③：通过这种方式就可以让CPU修改的数据可以马上暴露给其他CPU，达到「写操作」可见性的效果</p>
+<p>④：读屏障也是类似的：CPU当发现读屏障的指令时，会把该指令「之前」存在于「invalid queue」所有的指令都处理掉</p>
+<p>⑤：通过这种方式就可以确保当前CPU的缓存状态是准确的，达到「读操作」一定是读取最新的效果。</p>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093458.png"/>
+
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>①：由于不同CPU架构的缓存体系不一样、缓存一致性协议不一样、重排序的策略不一样、所提供的内存屏障指令也有差异，为了简化Java开发人员的工作。Java封装了一套规范，这套规范就是「Java内存模型」</p>
+<p>②：再详细地说，「Java内存模型」希望 屏蔽各种硬件和操作系统的访问差异，保证了Java程序在各种平台下对内存的访问都能得到一致效果。目的是解决多线程存在的原子性、可见性（缓存一致性）以及有序性问题。</p>
+<p>③：所以，Java为了屏蔽硬件和操作系统访问内存的各种差异，提出了「Java内存模型」的规范，保证了Java程序在各种平台下对内存的访问都能得到一致效果</p>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093505.png"/>
+
+<h2 id="Java内存模型"><a href="#Java内存模型" class="headerlink" title="Java内存模型"></a>Java内存模型</h2><p>①：Java内存模型它是一种「规范」，Java虚拟机会实现这个规范。</p>
+<p>②：Java内存模型主要的内容，我个人觉得有以下几块吧</p>
+<ol>
+<li>Java内存模型的抽象结构</li>
+<li>happen-before 规则</li>
+<li>对volatile 内存语义</li>
+</ol>
+<h3 id="Java内存模型的抽象结构"><a href="#Java内存模型的抽象结构" class="headerlink" title="Java内存模型的抽象结构"></a>Java内存模型的抽象结构</h3><p>①：Java内存模型定义了：Java线程对内存数据进行交互的规范。线程之间的「共享变量」存储在「主内存」中，每个线程都有自己私有的「本地内存」，「本地内存」存储了该线程以读&#x2F;写共享变量的副本。本地内存是Java内存模型的抽象概念，并不是真实存在的。</p>
+<p>②：Java内存模型规定了：线程对变量的所有操作都必须在「本地内存」进行，「不能直接读写主内存」的变量。Java内存模型定义了8种操作来完成「变量如何从主内存到本地内存，以及变量如何从本地内存到主内存」。分别是read&#x2F;load&#x2F;use&#x2F;assign&#x2F;store&#x2F;write&#x2F;lock&#x2F;unlock操作。看着8个操作很多，对变量的一次读写就涵盖了这些操作了。</p>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093835.png"/>
+
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093905.png"/>
+
+<h3 id="happen-before"><a href="#happen-before" class="headerlink" title="happen-before"></a>happen-before</h3><p>①：happen-before实际上也是一套「规则」。Java内存模型定义了这套规则，目的是为了阐述「操作之间」的内存「可见性」。</p>
+<p>②：在CPU和编译器层面上都有指令重排的问题。指令重排虽然是能提高运行的效率，但在并发编程中，我们在兼顾「效率」的前提下，还希望「程序结果」能由我们掌控的。说白了就是：在某些重要的场景下，这一组操作都不能进行重排序，「前面一个操作的结果对后续操作必须是可见的」。</p>
+<p>③：于是，Java内存模型就提出了happen-before这套规则，规则总共有8条，比如传递性、volatile变量规则、程序顺序规则、监视器锁的规则…（具体看规则的含义就好了，这块不难）</p>
+<p>④：我们写的代码只要在 happen-before 这些规则下，前一个操作的结果对后续操作是可见的，是不会发生重排序的。</p>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093928.png"/>
+
+<h3 id="volatile-关键字"><a href="#volatile-关键字" class="headerlink" title="volatile 关键字"></a>volatile 关键字</h3><p>①：特性：可见性和有序性(禁止重排序)</p>
+<p>②：而Java内存模型这个规范，很大程度下就是为了解决可见性和有序性的问题。</p>
+<h3 id="volatile-的可见性和有序性"><a href="#volatile-的可见性和有序性" class="headerlink" title="volatile 的可见性和有序性"></a>volatile 的可见性和有序性</h3><p>①：Java内存模型为了实现volatile有序性和可见性，定义了4种内存屏障的「规范」，分别是 LoadLoad&#x2F;LoadStore&#x2F;StoreLoad&#x2F;StoreStore</p>
+<p>②：说白了，就是在volatile「前后」加上「内存屏障」，使得编译器和CPU无法进行重排序，致使有序，并且写volatile变量对其他线程可见。</p>
+<p>③：Java内存模型定义了规范，那Java虚拟机就得实现。Hotspot虚拟机在「汇编」层面上实际是通过Lock前缀指令来实现的，lock指令能保证：禁止CPU和编译器的重排序（保证了有序性）、保证CPU写核心的指令可以立即生效且其他核心的缓存数据失效（保证了可见性）。</p>
+<img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220602093959.png"/>
+
+<h3 id="volatile-和-MESI协议的关系"><a href="#volatile-和-MESI协议的关系" class="headerlink" title="volatile 和 MESI协议的关系"></a>volatile 和 MESI协议的关系</h3><p>①：它们没有直接的关联。</p>
+<p>②：Java内存模型关注的是编程语言层面上，它是高维度的抽象。MESI 是CPU缓存一致性协议，不同的CPU架构都不一样，可能有的CPU压根就没用MESI协议…只不过MESI名声大，大家就都拿他来举例子了。而MESI可能只是在「特定的场景下」为实现 volatile 的可见性&#x2F;有序性而使用到的一部分罢了</p>
+<p>③：为了让Java程序员屏蔽上面这些底层知识，快速地入门使用volatile变量。Java内存模型的 happen-before 规则中就有对 volatile 变量规则的定义。这条规则的内容其实就是：对一个 volatile 变量的写操作相对于后续对这个 volatile 变量的读操作可见。它通过happen-before规则来规定：只要变量声明了volatile 关键字，写后再读，读必须可见写的值。（可见性、有序性）</p>
+
+  </div>
+</article>
+
+
+    <div class="blog-post-comments">
+        <div id="utterances_thread">
+            <noscript>Please enable JavaScript to view the comments.</noscript>
+        </div>
+    </div>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/search/">Search</a></li>
+         
+          <li><a href="/about/">About</a></li>
+        
+      </ul>
+    </div>
+
+    
+    <div id="toc-footer" style="display: none"> 
+      <div id="toc-footer2" >
+        
+          <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%9C%89Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B"><span class="toc-number">2.</span> <span class="toc-text">为什么要有Java内存模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MESI%E5%8D%8F%E8%AE%AE"><span class="toc-number">2.1.</span> <span class="toc-text">MESI协议</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E7%BC%93%E5%AD%98%E6%95%B0%E6%8D%AE%E4%B8%8D%E4%B8%80%E8%87%B4"><span class="toc-number">2.2.</span> <span class="toc-text">解决缓存数据不一致</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3CPU%E6%8C%87%E4%BB%A4%E9%87%8D%E6%8E%92%E5%BA%8F%EF%BC%88%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C%EF%BC%89"><span class="toc-number">2.3.</span> <span class="toc-text">解决CPU指令重排序（内存屏障）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C"><span class="toc-number">2.4.</span> <span class="toc-text">内存屏障</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">2.5.</span> <span class="toc-text">小结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B"><span class="toc-number">3.</span> <span class="toc-text">Java内存模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%8A%BD%E8%B1%A1%E7%BB%93%E6%9E%84"><span class="toc-number">3.1.</span> <span class="toc-text">Java内存模型的抽象结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#happen-before"><span class="toc-number">3.2.</span> <span class="toc-text">happen-before</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#volatile-%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">3.3.</span> <span class="toc-text">volatile 关键字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#volatile-%E7%9A%84%E5%8F%AF%E8%A7%81%E6%80%A7%E5%92%8C%E6%9C%89%E5%BA%8F%E6%80%A7"><span class="toc-number">3.4.</span> <span class="toc-text">volatile 的可见性和有序性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#volatile-%E5%92%8C-MESI%E5%8D%8F%E8%AE%AE%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.5.</span> <span class="toc-text">volatile 和 MESI协议的关系</span></a></li></ol></li></ol>
+        
+      </div>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&text=Java内存模型"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&title=Java内存模型"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&is_video=false&description=Java内存模型"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java内存模型&body=Check out this article: http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&title=Java内存模型"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&title=Java内存模型"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&title=Java内存模型"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&title=Java内存模型"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&name=Java内存模型&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/&t=Java内存模型"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+      <div class="footer-left">
+        <!-- 网站运行时间 -->
+        <span id="timeDate">载入天数...</span><span id="times">载入时分秒...</span>
+        <script>
+            var now = new Date(); 
+            function createtime() { 
+                var grt= new Date("05/06/2022 22:38:00");//建站时间 格式：月/日/年 时:分:秒
+                now.setTime(now.getTime()+250); 
+                days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days); 
+                hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours); 
+                if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum); 
+                mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;} 
+                seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum); 
+                snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;} 
+                document.getElementById("timeDate").innerHTML = "has been running for "+dnum+" d "; 
+                document.getElementById("times").innerHTML = hnum + " h " + mnum + " m " + snum + " s"; 
+            } 
+        setInterval("createtime()",250);
+        </script>
+
+        <!-- 导航栏 -->
+        <ul>
+          Copyright &copy;
+          
+          
+          2022
+          Soulchay
+        </ul>
+       
+      </div>
+      
+      <div class="footer-right">
+
+        <nav>
+          <!-- 导航栏 -->
+          <ul>
+            <!--
+          --><li><a href="/">Home</a></li><!--
+        --><!--
+          --><li><a href="/archives/">Writing</a></li><!--
+        --><!--
+          --><li><a href="/search/">Search</a></li><!--
+        --><!--
+          --><li><a href="/about/">About</a></li><!--
+        -->
+          </ul>
+
+          <!-- 不蒜子统计访问量 -->
+          <ul>
+                   
+              <span class="site-pv">
+                <i class="fa fa-eye"></i> 
+                  <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+              </span>
+              <span class="post-meta-divider">|</span>
+              <span class="site-uv">
+                <i class="fa fa-user"></i> 
+                  <span class="busuanzi-user" id="busuanzi_value_site_uv"></span>
+              </span>
+              
+            <script async src="/lib/busuanzi/busuanzi.pure.mini.js"></script>
+            
+          </ul>
+        </nav>
+      </div>
+
+
+</footer>
+
+    
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+  <script type="text/javascript">
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?5322d3f5365b142e868c4e1fd7131329";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+    <script type="text/javascript">
+      var utterances_repo = 'SoulChay/SoulChay.github.io';
+      var utterances_issue_term = 'pathname';
+      var utterances_label = 'Comment';
+      var utterances_theme = 'icy-dark';
+
+      (function(){
+          var script = document.createElement('script');
+
+          script.src = 'https://utteranc.es/client.js';
+          script.setAttribute('repo', utterances_repo);
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('label', utterances_label);
+          script.setAttribute('theme', utterances_theme);
+          script.setAttribute('crossorigin', 'anonymous');
+          script.async = true;
+          (document.getElementById('utterances_thread')).appendChild(script);
+      }());
+  </script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"left","width":140,"height":280},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
