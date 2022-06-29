@@ -4,6 +4,25 @@
   
     
     <entry>
+      <title>单点登录</title>
+      <link href="/2022/06/29/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95/"/>
+      <url>/2022/06/29/%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95/</url>
+      
+        <content type="html"><![CDATA[<h2 id="0-写在前面"><a href="#0-写在前面" class="headerlink" title="0.写在前面"></a>0.写在前面</h2><p>本文原出处：<a href="https://developer.aliyun.com/article/636281#slide-2">单点登录（SSO）看这一篇就够了</a></p><h2 id="1-解释"><a href="#1-解释" class="headerlink" title="1.解释"></a>1.解释</h2><p>单点登录英文全称Single Sign On，简称就是SSO。它的解释是：<b>在多个应用系统中，只需要登录一次，就可以访问其他相互信任的应用系统。</b></p><img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/SSO/20220629153653.png"/><p>如图所示，图中有4个系统，分别是Application1、Application2、Application3、和SSO。Application1、Application2、Application3没有登录模块，而SSO只有登录模块，没有其他的业务模块，当Application1、Application2、Application3需要登录时，将跳到SSO系统，SSO系统完成登录，其他的应用系统也就随之登录了。这完全符合我们对单点登录（SSO）的定义。</p><h2 id="2-技术实现"><a href="#2-技术实现" class="headerlink" title="2.技术实现"></a>2.技术实现</h2><p>在说单点登录（SSO）的技术实现之前，我们先说一说普通的登录认证机制。</p><img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/SSO/20220629153725.png"/><p>如上图所示，我们在浏览器（Browser）中访问一个应用，这个应用需要登录，我们填写完用户名和密码后，完成登录认证。这时，我们在这个用户的session中标记登录状态为yes（已登录），同时在浏览器（Browser）中写入Cookie，这个Cookie是这个用户的唯一标识。下次我们再访问这个应用的时候，请求中会带上这个Cookie，服务端会根据这个Cookie找到对应的session，通过session来判断这个用户是否登录。如果不做特殊配置，这个Cookie的名字叫做jsessionid，值在服务端（server）是唯一的。</p><h2 id="3-同域下的单点登录"><a href="#3-同域下的单点登录" class="headerlink" title="3.同域下的单点登录"></a>3.同域下的单点登录</h2><p>一个企业一般情况下只有一个域名，通过二级域名区分不同的系统。比如我们有个域名叫做：a.com，同时有两个业务系统分别为：app1.a.com和app2.a.com。我们要做单点登录（SSO），需要一个登录系统，叫做：sso.a.com。</p><p>我们只要在sso.a.com登录，app1.a.com和app2.a.com就也登录了。通过上面的登陆认证机制，我们可以知道，在sso.a.com中登录了，其实是在sso.a.com的服务端的session中记录了登录状态，同时在浏览器端（Browser）的sso.a.com下写入了Cookie。那么我们怎么才能让app1.a.com和app2.a.com登录呢？这里有两个问题：</p><ul><li>Cookie是不能跨域的，我们Cookie的domain属性是sso.a.com，在给app1.a.com和app2.a.com发送请求是带不上的。</li><li>sso、app1和app2是不同的应用，它们的session存在自己的应用内，是不共享的。</li></ul><img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/SSO/20220629153748.png"/><p>那么我们如何解决这两个问题呢？针对第一个问题，sso登录以后，可以将Cookie的域设置为顶域，即.a.com，这样所有子域的系统都可以访问到顶域的Cookie。<b>我们在设置Cookie时，只能设置顶域和自己的域，不能设置其他的域。比如：我们不能在自己的系统中给baidu.com的域设置Cookie。</b></p><p>Cookie的问题解决了，我们再来看看session的问题。我们在sso系统登录了，这时再访问app1，Cookie也带到了app1的服务端（Server），app1的服务端怎么找到这个Cookie对应的Session呢？这里就要把3个系统的Session共享，如图所示。共享Session的解决方案有很多，例如：Spring-Session。这样第2个问题也解决了。</p><p>同域下的单点登录就实现了，<b>但这还不是真正的单点登录。</b></p><h2 id="4-不同域下的单点登录"><a href="#4-不同域下的单点登录" class="headerlink" title="4.不同域下的单点登录"></a>4.不同域下的单点登录</h2><p>同域下的单点登录是巧用了Cookie顶域的特性。如果是不同域呢？不同域之间Cookie是不共享的，怎么办？</p><p>这里我们就要说一说CAS流程了，这个流程是单点登录的标准流程。<br><img src= "http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/SSO/20220629153805.png"/></p><p>上图是CAS官网上的标准流程，具体流程如下：</p><ol><li>用户访问app系统，app系统是需要登录的，但用户现在没有登录。</li><li>跳转到CAS server，即SSO登录系统，<b>以后图中的CAS Server我们统一叫做SSO系统。</b>SSO系统也没有登录，弹出用户登录页。</li><li>用户填写用户名、密码，SSO系统进行认证后，将登录状态写入SSO的session，浏览器（Browser）中写入SSO域下的Cookie。</li><li>SSO系统登录完成后会生成一个ST（Service Ticket），然后跳转到app系统，同时将ST作为参数传递给app系统。</li><li>app系统拿到ST后，从后台向SSO发送请求，验证ST是否有效。</li><li>验证通过后，app系统将登录状态写入session并设置app域下的Cookie。</li></ol><p>至此，跨域单点登录就完成了。以后我们再访问app系统时，app就是登录的。接下来，我们再看看访问app2系统时的流程。</p><ol><li>用户访问app2系统，app2系统没有登录，跳转到SSO。</li><li>由于SSO已经登录了，不需要重新登录认证。</li><li>SSO生成ST，浏览器跳转到app2系统，并将ST作为参数传递给app2。</li><li>app2拿到ST，后台访问SSO，验证ST是否有效。</li><li>验证成功后，app2将登录状态写入session，并在app2域下写入Cookie。</li></ol><p>这样，app2系统不需要走登录流程，就已经是登录了。SSO，app和app2在不同的域，它们之间的session不共享也是没问题的。</p><p><b>有的同学问我，SSO系统登录后，跳回原业务系统时，带了个参数ST，业务系统还要拿ST再次访问SSO进行验证，觉得这个步骤有点多余。他想SSO登录认证通过后，通过回调地址将用户信息返回给原业务系统，原业务系统直接设置登录状态，这样流程简单，也完成了登录，不是很好吗？</b></p><p><b>其实这样问题时很严重的，如果我在SSO没有登录，而是直接在浏览器中敲入回调的地址，并带上伪造的用户信息，是不是业务系统也认为登录了呢？这是很可怕的。</b></p><h2 id="5-总结"><a href="#5-总结" class="headerlink" title="5.总结"></a>5.总结</h2><p>单点登录（SSO）的所有流程都介绍完了，原理大家都清楚了。总结一下单点登录要做的事情：</p><ul><li><b>单点登录（SSO系统）是保障各业务系统的用户资源的安全 。</b></li><li><b>各个业务系统获得的信息是，这个用户能不能访问我的资源。</b></li><li><b>单点登录，资源都在各个业务系统这边，不在SSO那一方。 用户在给SSO服务器提供了用户名密码后，作为业务系统并不知道这件事。 SSO随便给业务系统一个ST，那么业务系统是不能确定这个ST是用户伪造的，还是真的有效，所以要拿着这个ST去SSO服务器再问一下，这个用户给我的ST是否有效，是有效的我才能让这个用户访问。</b>&gt;</li></ul>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> Java </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Java内存模型</title>
       <link href="/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/"/>
       <url>/2022/06/02/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/</url>
@@ -235,6 +254,29 @@
             <tag> Hexo </tag>
             
             <tag> Bug </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Spring 八股文</title>
+      <link href="/2022/05/01/Spring-%E5%85%AB%E8%82%A1%E6%96%87/"/>
+      <url>/2022/05/01/Spring-%E5%85%AB%E8%82%A1%E6%96%87/</url>
+      
+        <content type="html"><![CDATA[<h2 id="谈谈Spring-的IOC"><a href="#谈谈Spring-的IOC" class="headerlink" title="谈谈Spring 的IOC"></a>谈谈Spring 的IOC</h2><p>①：Spring IOC 解决的是对象管理和对象依赖的问题。本来是我们自己手动new出来的对象，现在则把对象交给Spring的IOC容器管理。</p><p>②：IOC容器可以理解为一个对象工厂，我们都把该对象交给工厂，工厂管理这些对象的创建以及依赖关系。等我们需要用对象的时候，从工厂里边获取就好了</p><img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220604190611.png"/><h2 id="IOC的「控制反转」和「依赖注入」"><a href="#IOC的「控制反转」和「依赖注入」" class="headerlink" title="IOC的「控制反转」和「依赖注入」"></a>IOC的「控制反转」和「依赖注入」</h2><p>①：「控制反转」：把原有自己掌控的事交给别人去处理，它更多的是一种思想或者可以理解为设计模式，比如：本来由我们自己new出来的对象，现在交由IOC容器，把对象的控制权交给它方了</p><p>②：「依赖注入」：它其实是「控制反转」的实现方式，对象无需自行创建或者管理它的依赖关系，依赖关系将被「自动注入」到需要它们的对象当中去</p><h2 id="Spring-IOC优点"><a href="#Spring-IOC优点" class="headerlink" title="Spring IOC优点"></a>Spring IOC优点</h2><p>①：主要的好处在于「将对象集中统一管理」并且「降低耦合度」。</p><p>②：比如说：我用Spring IOC 可以方便单元测试、对象创建复杂、对象依赖复杂、单例等等的，什么都可以交给Spring IOC，理论上自己new出来的都可以解决上面的问题，Spring在各种场景组合下有可能不是最优解，但new出来的你要自己管理，可能你得自己写工厂，得实现一大套的东西才能满足需求，写着写着有可能还是Spring的那一套。如果项目里的对象都是就new下就完事了，没有多个实现类，那没事，不用Spring也没啥问题</p><p>③：并且Spring核心不仅仅IOC，除了把对象创建出来，还有一整套的Bean生命周期管理，比如说你要实现对象增强，就可以使用AOP不然你还得自己创建代理..</p><img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220604190219.png"/><h2 id="谈谈Spring-的AOP"><a href="#谈谈Spring-的AOP" class="headerlink" title="谈谈Spring 的AOP"></a>谈谈Spring 的AOP</h2><p>①：Spring AOP 解决的是 非业务代码抽取的问题</p><p>②：AOP 底层的技术是动态代理，在Spring内实现依赖的是BeanPostProcessor</p><p>③：比如我们需要在方法上注入些「重复性」的非业务代码，就可以利用Spring AOP，所谓的「面向切面编程」在我理解下其实就是在方法前后增加非业务代码</p><h2 id="怎么把对象交给IOC容器管理"><a href="#怎么把对象交给IOC容器管理" class="headerlink" title="怎么把对象交给IOC容器管理"></a>怎么把对象交给IOC容器管理</h2><p>Spring提供了4种方式，分别是：</p><ul><li>注解：日常写业务代码一般用注解来定义各种对象</li><li>XML ：责任链这种一般配置在XML</li><li>JavaConfig：「注解」解决不了的就用JavaConfig</li><li>基于Groovy DSL配置</li></ul><img src="http://fastly.jsdelivr.net/gh/SoulChay/figureBed/blogPhotos/bagu/20220604190249.png"/><h2 id="Component-和-Bean-的区别是什么？"><a href="#Component-和-Bean-的区别是什么？" class="headerlink" title="@Component 和 @Bean 的区别是什么？"></a>@Component 和 @Bean 的区别是什么？</h2><ul><li><code>@Component</code> 注解作用于类，而<code>@Bean</code>注解作用于方法。</li><li><code>@Component</code>通常是通过类路径扫描来自动侦测以及自动装配到 Spring 容器中（我们可以使用 <code>@ComponentScan</code> 注解定义要扫描的路径从中找出标识了需要装配的类自动装配到 Spring 的 bean 容器中）。<code>@Bean</code> 注解通常是我们在标有该注解的方法中定义产生这个 bean,<code>@Bean</code>告诉了 Spring 这是某个类的实例，当我需要用它的时候还给我。</li><li><code>@Bean</code> 注解比 <code>@Component</code> 注解的自定义性更强，而且很多地方我们只能通过 <code>@Bean</code> 注解来注册 bean。比如当我们引用第三方库中的类需要装配到 <code>Spring</code>容器时，则只能通过 <code>@Bean</code>来实现。</li></ul><h2 id="Autowired-和-Resource-的区别是什么？"><a href="#Autowired-和-Resource-的区别是什么？" class="headerlink" title="@Autowired 和 @Resource 的区别是什么？"></a>@Autowired 和 @Resource 的区别是什么？</h2><ul><li><code>@Autowired</code> 是 Spring 提供的注解，<code>@Resource</code> 是 JDK 提供的注解。</li><li><code>Autowired</code> 默认的注入方式为<code>byType</code>（根据类型进行匹配），<code>@Resource</code>默认注入方式为 <code>byName</code>（根据名称进行匹配）。</li><li>当一个接口存在多个实现类的情况下，<code>@Autowired</code> 和<code>@Resource</code>都需要通过名称才能正确匹配到对应的 Bean。<code>Autowired</code> 可以通过 <code>@Qualifier</code> 注解来显示指定名称，<code>@Resource</code>可以通过 <code>name</code> 属性来显示指定名称。</li></ul><h2 id="Bean-的作用域有哪些"><a href="#Bean-的作用域有哪些" class="headerlink" title="Bean 的作用域有哪些?"></a>Bean 的作用域有哪些?</h2><ul><li><b>singleton</b> : 唯一 bean 实例，Spring 中的 bean 默认都是单例的，对单例设计模式的应用。</li><li><b>prototype</b> : 每次请求都会创建一个新的 bean 实例。</li><li><b>request</b>: 每一次 HTTP 请求都会产生一个新的 bean，该 bean 仅在当前 HTTP request 内有效。</li><li><b>session</b>: 每一次来自新 session 的 HTTP 请求都会产生一个新的 bean，该 bean 仅在当前 HTTP session 内有效。</li><li><b>global-session</b>： 全局 session 作用域，仅仅在基于 portlet 的 web 应用中才有意义，Spring5 已经没有了。Portlet 是能够生成语义代码(例如：HTML)片段的小型 Java Web 插件。它们基于 portlet 容器，可以像 servlet 一样处理 HTTP 请求。但是，与 servlet 不同，每个 portlet 都有不同的会话。</li></ul>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> Java </tag>
+            
+            <tag> 八股文 </tag>
+            
+            <tag> Spring </tag>
             
         </tags>
       
